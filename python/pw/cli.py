@@ -37,11 +37,14 @@ except keepass.kpdb.DecryptionFailed, df:
   sys.exit(1)
 
 # determine (not yet canonical) hierarchical group paths (by groupid)
-def get_group_paths(groups):
+def get_group_paths_and_backup_groupid(groups):
   group_paths = {}
   current_path_stack = []
   last_group_name = None
   for g in db.groups:
+    if g.group_name == 'Backup' and g.level == 0:
+      backup_groupid = g.groupid
+
     current_level = len(current_path_stack)
     if g.level < current_level:
       while g.level < len(current_path_stack):
@@ -53,9 +56,9 @@ def get_group_paths(groups):
 
     group_paths[g.groupid] = '.'.join(current_path_stack + [g.group_name])
     last_group_name = g.group_name
-  return group_paths
+  return group_paths, backup_groupid
 
-group_paths = get_group_paths(db.groups)
+group_paths, backup_groupid = get_group_paths_and_backup_groupid(db.groups)
 
 # create list of entries sorted by their canonical path
 def make_canonical_path(path):
@@ -64,7 +67,7 @@ def make_canonical_path(path):
 for e in db.entries:
   e.canonical_path = make_canonical_path(group_paths[e.groupid] + '.' + e.title)
 
-entries = sorted((e for e in db.entries if e.uuid != UUID_KPX_METAINFO), key=lambda e: e.canonical_path)
+entries = sorted((e for e in db.entries if e.uuid != UUID_KPX_METAINFO and e.groupid != backup_groupid), key=lambda e: e.canonical_path)
 
 # perform query
 query = make_canonical_path(args[0]) if args else ''
