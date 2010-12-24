@@ -1,3 +1,0 @@
-[submodule "external/python-keepass"]
-	path = external/python-keepass
-	url = git://github.com/catch22/python-keepass.git
