@@ -1,9 +1,0 @@
-#!/bin/bash
-LINK=`readlink "$0"`
-if [ $? -eq 0 ]; then
-	SELF=`dirname "$0"`/$LINK
-else
-	SELF=$0
-fi
-BASEDIR=`dirname "$SELF"`/..
-PYTHONPATH="$BASEDIR/python:$BASEDIR/external:$BASEDIR/external/python-keepass/python:$PYTHONPATH" /usr/bin/env python -m pw.cli $@
