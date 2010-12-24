@@ -20,7 +20,7 @@ signal.signal(signal.SIGINT, handle_sigint)
 
 # parse command-line options
 parser = optparse.OptionParser(usage='Usage: %prog [options] [query]', version=VERSION)
-parser.add_option('-d', '--display', action='store_true', help='display passwords on console (as opposed to copying them to the clipboard)')
+parser.add_option('-E', '--echo', action='store_true', help='echo passwords on console (as opposed to copying them to the clipboard)')
 opts, args = parser.parse_args()
 
 # verify that database file is present
@@ -99,7 +99,7 @@ for e in results:
     print title,
 
   # display password or copy to clipboard (if only match)
-  if opts.display:
+  if opts.echo:
     print '| \x1b[31m%s\x1b[0m' % e['P'],
   elif len(results) == 1:
     pyperclip.setcb(e['P'])
