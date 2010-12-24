@@ -8,7 +8,7 @@ Make sure that `.passwords.asc` exists.
 
 ## Usage
 
-    Usage: pw [options] [query]
+    Usage: pw [options] [pathquery[:userquery]]
 
     Options:
       --version   show program's version number and exit

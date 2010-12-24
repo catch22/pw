@@ -18,7 +18,7 @@ def handle_sigint(*_):
 signal.signal(signal.SIGINT, handle_sigint)
 
 # parse command-line options
-parser = optparse.OptionParser(usage='Usage: %prog [options] [query]', version=VERSION)
+parser = optparse.OptionParser(usage='Usage: %prog [options] [pathquery[:userquery]]', version=VERSION)
 parser.add_option('-E', '--echo', action='store_true', help='echo passwords on console (as opposed to copying them to the clipboard)')
 opts, args = parser.parse_args()
 
