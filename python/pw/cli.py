@@ -1,15 +1,16 @@
 #!/usr/bin/env python
 import getpass
-import keepass.kpdb
 import os.path
 import optparse
 import pyperclip
 import signal
+import subprocess
 import sys
+import yaml
+
 
 VERSION = '%prog 0.1 alpha'
-DATABASE_PATH = '~/.keepass.kdb'
-UUID_KPX_METAINFO = '00000000000000000000000000000000'
+DATABASE_PATH = '~/.passwords.asc'
 
 # install silent Ctrl-C handler
 def handle_sigint(*_):
@@ -30,48 +31,54 @@ if not os.path.exists(database_path):
 
 # read master password and open database
 master_password = getpass.getpass()
-try:
-  db = keepass.kpdb.Database(database_path, master_password)
-except keepass.kpdb.DecryptionFailed, df:
-  print df
+popen = subprocess.Popen("gpg -qd --no-tty --passphrase '%s' '%s'" % (master_password,database_path), shell=True, stdout=subprocess.PIPE)
+output,_ = popen.communicate()
+if popen.returncode:
   sys.exit(1)
 
-# determine (not yet canonical) hierarchical group paths (by groupid)
-def get_group_paths_and_backup_groupid(groups):
-  group_paths = {}
-  current_path_stack = []
-  last_group_name = None
-  for g in db.groups:
-    if g.group_name == 'Backup' and g.level == 0:
-      backup_groupid = g.groupid
-
-    current_level = len(current_path_stack)
-    if g.level < current_level:
-      while g.level < len(current_path_stack):
-        current_path_stack.pop()
-    elif g.level == current_level + 1:
-      current_path_stack += [last_group_name]
-    else:
-      assert g.level == current_level
-
-    group_paths[g.groupid] = '.'.join(current_path_stack + [g.group_name])
-    last_group_name = g.group_name
-  return group_paths, backup_groupid
-
-group_paths, backup_groupid = get_group_paths_and_backup_groupid(db.groups)
+# parse YAML
+root_node = yaml.load(output)
 
 # create list of entries sorted by their canonical path
 def make_canonical_path(path):
   return path.replace(' ', '_').lower()
 
-for e in db.entries:
-  e.canonical_path = make_canonical_path(group_paths[e.groupid] + '.' + e.title)
+entries = []
 
-entries = sorted((e for e in db.entries if e.uuid != UUID_KPX_METAINFO and e.groupid != backup_groupid), key=lambda e: e.canonical_path)
+def collect_entry(node, path):
+  if type(node) != dict:
+    node = {'P':node}
+  else:
+    if node.has_key('U') and type(node['U']) == int:
+      node['U'] = str(node['U'])
+  node['canonical_path'] = make_canonical_path(path)
+  entries.append(node)
+
+def collect_entries(node, path):
+  if type(node) == list:
+    for n in node:
+      collect_entry(n, path)
+  elif type(node) == dict:
+    if node.has_key('P'):
+      collect_entry(node, path)
+    else:
+      for (key,value) in node.iteritems():
+        collect_entries(value, path + '.' + key if path else key)
+  else:
+    collect_entry(node, path)
+
+collect_entries(root_node, '')
+
+entries = sorted(entries, key=lambda e: e['canonical_path'])
 
 # perform query
-query = make_canonical_path(args[0]) if args else ''
-results = [e for e in entries if e.canonical_path.find(query) != -1]
+if args and args[0].find(':') != -1:
+  query_path, query_user = [make_canonical_path(q) for q in args[0].split(':')]
+elif args:
+  query_path, query_user = make_canonical_path(args[0]), ''
+else:
+  query_path, query_user = '', ''
+results = [e for e in entries if e['canonical_path'].find(query_path) != -1 and ((not query_user) or (e.has_key('U') and e['U'].find(query_user) != -1))]
 
 # print results
 if len(results) == 0:
@@ -80,26 +87,32 @@ if len(results) == 0:
 
 for e in results:
   # mark up result
-  title = e.canonical_path
-  if query:
-    title = ('\x1b[33m' + query + '\x1b[0m').join(title.split(query))
-  print '%s: %s' % (title,e.username),
+  title = e['canonical_path']
+  user = e['U'] if e.has_key('U') else ''
+  if query_path:
+    title = ('\x1b[33m' + query_path + '\x1b[0m').join(title.split(query_path))
+  if query_user:
+    user = ('\x1b[33m' + query_user + '\x1b[0m').join(user.split(query_user))
+  if user:
+    print '%s: %s' % (title,user),
+  else:
+    print title,
 
   # display password or copy to clipboard (if only match)
   if opts.display:
-    print '| \x1b[31m%s\x1b[0m' % e.password,
+    print '| \x1b[31m%s\x1b[0m' % e['P'],
   elif len(results) == 1:
-    pyperclip.setcb(e.password)
+    pyperclip.setcb(e['P'])
     print '| \x1b[32mpassword copied to clipboard\x1b[0m',
 
   # display url and notes
-  if e.url and len(results) > 1:
-    print '| %s' % e.url,
-  if e.notes and len(results) > 1:
+  if e.has_key('L') and len(results) > 1:
+    print '| %s' % e['L'],
+  if e.has_key('N') and len(results) > 1:
     print '| ...',
   print
 
-  if e.url and len(results) == 1:
-    print '  %s' % e.url
-  if e.notes and len(results) == 1:
-    print '  %s' % e.notes
+  if e.has_key('L') and len(results) == 1:
+    print '  %s' % e['L']
+  if e.has_key('N') and len(results) == 1:
+    print '  %s' % e['N']
