@@ -1,12 +1,11 @@
 #!/usr/bin/env python
-import os.path
+import os, os.path
 import optparse
 import pyperclip
 import signal
 import subprocess
 import sys
 import yaml
-
 
 VERSION = '%prog 0.1 alpha'
 DATABASE_PATH = '~/.passwords.asc'
@@ -20,19 +19,20 @@ signal.signal(signal.SIGINT, handle_sigint)
 # parse command-line options
 parser = optparse.OptionParser(usage='Usage: %prog [options] [pathquery[:userquery]]', version=VERSION)
 parser.add_option('-E', '--echo', action='store_true', help='echo passwords on console (as opposed to copying them to the clipboard)')
+parser.add_option('-s', '--strict', action='store_true', help='fail if password should be copied to clipboard but more than one result has been found')
 opts, args = parser.parse_args()
 
 # verify that database file is present
 database_path = os.path.expanduser(DATABASE_PATH)
 if not os.path.exists(database_path):
   print 'Error: Password safe not found at %s.' % DATABASE_PATH
-  sys.exit(1)
+  sys.exit(-1)
 
 # read master password and open database
-popen = subprocess.Popen("gpg -qd '%s'" % database_path, shell=True, stdout=subprocess.PIPE)
+popen = subprocess.Popen("gpg --use-agent --no-tty -qd '%s'" % database_path, shell=True, stdout=subprocess.PIPE)
 output,_ = popen.communicate()
 if popen.returncode:
-  sys.exit(1)
+  sys.exit(-1)
 
 # parse YAML
 root_node = yaml.load(output)
@@ -79,29 +79,38 @@ else:
 results = [e for e in entries if e['canonical_path'].find(query_path) != -1 and ((not query_user) or (e.has_key('U') and e['U'].find(query_user) != -1))]
 
 # print results
+HAVE_COLOR_TERM = os.environ.has_key('TERM') and os.environ['TERM'] == 'xterm-color'
+
+def wrap_in_color(text, color_code):
+  return '\x1b[%sm%s\x1b[0m' % (color_code, text) if HAVE_COLOR_TERM else text
+
 if len(results) == 0:
   print 'no record found'
-  sys.exit(0)
+  sys.exit(-2)
+
+if len(results) > 1 and not opts.echo and opts.strict:
+  print 'multiple records found'
+  sys.exit(-3)
 
 for e in results:
   # mark up result
-  title = e['canonical_path']
+  path = e['canonical_path']
   user = e['U'] if e.has_key('U') else ''
   if query_path:
-    title = ('\x1b[33m' + query_path + '\x1b[0m').join(title.split(query_path))
+    path = wrap_in_color(query_path, 33).join(path.split(query_path))
   if query_user:
-    user = ('\x1b[33m' + query_user + '\x1b[0m').join(user.split(query_user))
+    user = wrap_in_color(query_user, 33).join(user.split(query_user))
   if user:
-    print '%s: %s' % (title,user),
+    print '%s: %s' % (path,user),
   else:
-    print title,
+    print path,
 
   # display password or copy to clipboard (if only match)
   if opts.echo:
-    print '| \x1b[31m%s\x1b[0m' % e['P'],
+    print '|', wrap_in_color(e['P'], 31),
   elif len(results) == 1:
     pyperclip.setcb(e['P'])
-    print '| \x1b[32mpassword copied to clipboard\x1b[0m',
+    print '|', wrap_in_color('password copied to clipboard', 32),
 
   # display url and notes
   if e.has_key('L') and len(results) > 1:
