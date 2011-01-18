@@ -1,4 +1,4 @@
-# pw
+# pw [![](http://stillmaintained.com/catch22/pw.png)](http://stillmaintained.com/catch22/pw)
 
 Grep GPG-encrypted YAML password safes.
 
