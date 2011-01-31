@@ -106,6 +106,7 @@ for e in results:
     print path,
 
   # display password or copy to clipboard (if only match)
+  e['P'] = str(e['P'])
   if opts.echo:
     print '|', wrap_in_color(e['P'], 31),
   elif len(results) == 1:
