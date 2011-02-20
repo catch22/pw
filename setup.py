@@ -16,5 +16,5 @@ setup(
     'License :: OSI Approved :: MIT License',
   ],
   long_description = open(join(dirname(abspath(__file__)), 'README.txt')).read(),
-  requires=['pyyaml', 'xerox'],
+  requires=['PyYAML', 'xerox'],
 )
