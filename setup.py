@@ -1,8 +1,9 @@
 from distutils.core import setup
+from os.path import join, dirname, abspath
 
 setup(
   name = 'pw',
-  version = '0.1',
+  version = '0.1.1',
   description = 'Grep GPG-encrypted YAML password safe.',
   author = 'Michael Walter',
   author_email = 'michael.walter@gmail.com',
@@ -14,6 +15,6 @@ setup(
     'Environment :: Console',
     'License :: OSI Approved :: MIT License',
   ],
-  long_description = open('README.rst').read(),
+  long_description = open(join(dirname(abspath(__file__)), 'README.txt')).read(),
   requires=['pyyaml', 'xerox'],
 )
