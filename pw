@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import os, os.path
 import optparse
-import pyperclip
+import xerox
 import signal
 import subprocess
 import sys
@@ -110,7 +110,7 @@ for e in results:
   if opts.echo:
     print '|', wrap_in_color(e['P'], 31),
   elif len(results) == 1:
-    pyperclip.setcb(e['P'])
+    xerox.copy(e['P'])
     print '|', wrap_in_color('password copied to clipboard', 32),
 
   # display url and notes
