@@ -3,7 +3,7 @@ from os.path import join, dirname, abspath
 
 setup(
   name = 'pw',
-  version = '0.1.2',
+  version = '0.1.3',
   description = 'Grep GPG-encrypted YAML password safe.',
   author = 'Michael Walter',
   author_email = 'michael.walter@gmail.com',
@@ -16,5 +16,5 @@ setup(
     'License :: OSI Approved :: MIT License',
   ],
   long_description = open(join(dirname(abspath(__file__)), 'README.txt')).read(),
-  requires=['PyYAML', 'xerox'],
+  install_requires=['PyYAML', 'xerox'],
 )
