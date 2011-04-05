@@ -79,7 +79,7 @@ else:
 results = [e for e in entries if e['canonical_path'].find(query_path) != -1 and ((not query_user) or (e.has_key('U') and e['U'].find(query_user) != -1))]
 
 # print results
-HAVE_COLOR_TERM = os.environ.has_key('TERM') and os.environ['TERM'] == 'xterm-color'
+HAVE_COLOR_TERM = os.getenv('COLORTERM') or 'color' in os.getenv('TERM', 'default')
 
 def wrap_in_color(text, color_code):
   return '\x1b[%sm%s\x1b[0m' % (color_code, text) if HAVE_COLOR_TERM else text
