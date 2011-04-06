@@ -7,7 +7,7 @@ import subprocess
 import sys
 import yaml
 
-VERSION = '%prog 0.1.3'
+VERSION = '%prog 0.1.4'
 DATABASE_PATH = '~/.passwords.yaml.asc'
 
 # install silent Ctrl-C handler

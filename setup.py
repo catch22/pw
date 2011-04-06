@@ -3,7 +3,7 @@ from os.path import join, dirname, abspath
 
 setup(
   name = 'pw',
-  version = '0.1.3',
+  version = '0.1.4',
   description = 'Grep GPG-encrypted YAML password safe.',
   author = 'Michael Walter',
   author_email = 'michael.walter@gmail.com',
