@@ -6,15 +6,21 @@ import signal
 import subprocess
 import sys
 import yaml
+from termcolor import colored
 
 VERSION = '%prog 0.1.4'
 DATABASE_PATH = '~/.passwords.yaml.asc'
+HAVE_COLOR_TERM = os.getenv('COLORTERM') or 'color' in os.getenv('TERM', 'default')
 
 # install silent Ctrl-C handler
 def handle_sigint(*_):
   print
   sys.exit(1)
 signal.signal(signal.SIGINT, handle_sigint)
+
+# disable termcolor for terminals not supporting color
+if not HAVE_COLOR_TERM:
+  colored = lambda text, *args, **kwargs: text
 
 # parse command-line options
 parser = optparse.OptionParser(usage='Usage: %prog [options] [pathquery[:userquery]]', version=VERSION)
@@ -79,11 +85,6 @@ else:
 results = [e for e in entries if e['canonical_path'].find(query_path) != -1 and ((not query_user) or (e.has_key('U') and e['U'].find(query_user) != -1))]
 
 # print results
-HAVE_COLOR_TERM = os.getenv('COLORTERM') or 'color' in os.getenv('TERM', 'default')
-
-def wrap_in_color(text, color_code):
-  return '\x1b[%sm%s\x1b[0m' % (color_code, text) if HAVE_COLOR_TERM else text
-
 if len(results) == 0:
   print 'no record found'
   sys.exit(-2)
@@ -97,9 +98,9 @@ for e in results:
   path = e['canonical_path']
   user = e['U'] if e.has_key('U') else ''
   if query_path:
-    path = wrap_in_color(query_path, 33).join(path.split(query_path))
+    path = colored(query_path, 'yellow').join(path.split(query_path))
   if query_user:
-    user = wrap_in_color(query_user, 33).join(user.split(query_user))
+    user = colored(query_user, 'yellow').join(user.split(query_user))
   if user:
     print '%s: %s' % (path,user),
   else:
@@ -108,10 +109,10 @@ for e in results:
   # display password or copy to clipboard (if only match)
   e['P'] = str(e['P'])
   if opts.echo:
-    print '|', wrap_in_color(e['P'], 31),
+    print '|', colored(e['P'], 'red'),
   elif len(results) == 1:
     xerox.copy(e['P'])
-    print '|', wrap_in_color('password copied to clipboard', 32),
+    print '|', colored('password copied to clipboard', 'green'),
 
   # display url and notes
   if e.has_key('L') and len(results) > 1:
