@@ -10,7 +10,7 @@ import xerox
 import yaml
 from termcolor import colored
 
-VERSION = '%prog 0.1.4'
+VERSION = '%prog 0.1.5'
 DATABASE_PATH = '~/.passwords.yaml.asc'
 HAVE_COLOR_TERM = os.getenv('COLORTERM') or 'color' in os.getenv('TERM', 'default')
 
