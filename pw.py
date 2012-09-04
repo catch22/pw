@@ -8,7 +8,7 @@ import subprocess
 import sys
 import xerox
 import yaml
-from termcolor import colored
+import termcolor
 
 
 def main():
@@ -23,8 +23,7 @@ def main():
   signal.signal(signal.SIGINT, handle_sigint)
 
   # disable termcolor for terminals not supporting color
-  if not HAVE_COLOR_TERM:
-    colored = lambda text, *args, **kwargs: text
+  colored = termcolor.colored if HAVE_COLOR_TERM else lambda text, *args, **kwargs: text
 
   # color wrappers
   color_match = partial(colored, color='yellow', attrs=['bold'])
@@ -44,7 +43,7 @@ def main():
     sys.exit(-1)
 
   # read master password and open database
-  popen = subprocess.Popen(["gpg", "--use-agent", "--no-tty", "-qd", database_path], shell=True, stdout=subprocess.PIPE)
+  popen = subprocess.Popen(["gpg", "--use-agent", "--no-tty", "-qd", database_path], stdout=subprocess.PIPE)
   output,_ = popen.communicate()
   if popen.returncode:
     sys.exit(-1)
