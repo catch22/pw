@@ -1,1 +1,3 @@
-pw.pyc
+*.pyc
+/dist/
+/pw.egg-info/
