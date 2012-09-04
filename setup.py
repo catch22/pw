@@ -1,4 +1,4 @@
-from distutils.core import setup
+from setuptools import setup
 from os.path import join, dirname, abspath
 
 setup(
@@ -8,7 +8,7 @@ setup(
   author = 'Michael Walter',
   author_email = 'michael.walter@gmail.com',
   url = 'https://github.com/catch22/pw',
-  scripts = ['scripts/pw'],
+  scripts = ['bin/pw'],
   classifiers = [
     'Programming Language :: Python',
     'Development Status :: 4 - Beta',
