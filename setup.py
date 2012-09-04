@@ -3,12 +3,14 @@ from os.path import join, dirname, abspath
 
 setup(
   name = 'pw',
-  version = '0.1.5',
+  version = '0.2.0',
   description = 'Grep GPG-encrypted YAML password safe.',
   author = 'Michael Walter',
   author_email = 'michael.walter@gmail.com',
   url = 'https://github.com/catch22/pw',
-  scripts = ['bin/pw'],
+  entry_points = {
+    'console_scripts': ['pw = pw:main']
+  },
   classifiers = [
     'Programming Language :: Python',
     'Development Status :: 4 - Beta',
