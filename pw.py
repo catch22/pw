@@ -12,7 +12,7 @@ import termcolor
 
 
 def main():
-  VERSION = '%prog 0.2.0'
+  VERSION = '%prog 0.2.1'
   DATABASE_PATH = os.path.join('~', '.passwords.yaml.asc')
   HAVE_COLOR_TERM = os.getenv('COLORTERM') or 'color' in os.getenv('TERM', 'default')
 
