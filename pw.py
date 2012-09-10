@@ -67,7 +67,7 @@ def main():
     entry = Entry(
       normalized_path=normalize_path(path),
       user=unicode(node.get('U', None)),
-      password=unicode(node.get('P', '')),
+      password=node.get('P', ''),
       link=node.get('L', None),
       notes=node.get('N', None)
     )
