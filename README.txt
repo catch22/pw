@@ -23,7 +23,7 @@ Usage
 
 ::
 
-  Usage: pw [options] [pathquery[:userquery]]
+  Usage: pw [options] [[userquery@]pathquery]
 
   Options:
     --version   show program's version number and exit

@@ -31,7 +31,7 @@ def main():
   color_success = partial(colored, color='green', attrs=['bold', 'reverse'])
 
   # parse command-line options
-  parser = optparse.OptionParser(usage='Usage: %prog [options] [pathquery[:userquery]]', version=VERSION)
+  parser = optparse.OptionParser(usage='Usage: %prog [options] [[userquery@]pathquery]', version=VERSION)
   parser.add_option('-E', '--echo', action='store_true', help='echo passwords on console (as opposed to copying them to the clipboard)')
   parser.add_option('-s', '--strict', action='store_true', help='fail if password should be copied to clipboard but more than one result has been found')
   opts, args = parser.parse_args()
@@ -94,12 +94,12 @@ def main():
   entries = sorted(entries, key=lambda e: e.normalized_path)
 
   # perform query
-  if args and args[0].find(':') != -1:
-    query_path, query_user = [normalize_path(q) for q in args[0].split(':')]
+  if args and args[0].find('@') != -1:
+    query_user, query_path = map(normalize_path, args[0].split('@'))
   elif args:
-    query_path, query_user = normalize_path(args[0]), ''
+    query_user, query_path = '', normalize_path(args[0])
   else:
-    query_path, query_user = '', ''
+    query_user, query_path = '', ''
   results = [e for e in entries if e.normalized_path.find(query_path) != -1 and ((not query_user) or (e.user and e.user.find(query_user) != -1))]
 
   # print results
