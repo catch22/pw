@@ -33,7 +33,7 @@ def main():
   # parse command-line options
   parser = optparse.OptionParser(usage='Usage: %prog [options] [[userquery@]pathquery]', version=VERSION)
   parser.add_option('-E', '--echo', action='store_true', help='echo passwords on console (as opposed to copying them to the clipboard)')
-  parser.add_option('-s', '--strict', action='store_true', help='fail if password should be copied to clipboard but more than one result has been found')
+  parser.add_option('-S', '--strict', action='store_true', help='fail if more than one result has been found')
   opts, args = parser.parse_args()
 
   # verify that database file is present
@@ -107,7 +107,7 @@ def main():
     print 'no record found'
     sys.exit(-2)
 
-  if len(results) > 1 and not opts.echo and opts.strict:
+  if opts.strict and len(results) > 1:
     print 'multiple records found'
     sys.exit(-3)
 
