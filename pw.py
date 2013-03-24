@@ -100,7 +100,7 @@ def main():
     query_path = normalize_path(query_path)
   else:
     query_user, query_path = '', ''
-  results = [e for e in entries if e.normalized_path.find(query_path) != -1 and ((not query_user) or (e.user and e.user.find(query_user) != -1))]
+  results = [e for e in entries if query_path in e.normalized_path and ((not query_user) or (e.user and query_user in e.user))]
 
   # print results
   if len(results) == 0:
