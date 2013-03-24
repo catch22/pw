@@ -66,8 +66,8 @@ def main():
     # add entry
     entry = Entry(
       normalized_path=normalize_path(path),
-      user=unicode(node.get('U', None)),
-      password=str(node.get('P', '')),
+      user=unicode(node.get('U', '')),
+      password=str(node.get('P', '')),   # xerox had some problems with unicode strings -> fail early
       link=node.get('L', None),
       notes=node.get('N', None)
     )
