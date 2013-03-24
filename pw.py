@@ -39,7 +39,7 @@ def main():
   # verify that database file is present
   database_path = os.path.expanduser(DATABASE_PATH)
   if not os.path.exists(database_path):
-    print 'Error: Password safe not found at %s.' % database_path
+    print >> sys.stderr, '%s: error: password database not found at %s' % (parser.get_prog_name(), database_path)
     sys.exit(-1)
 
   # read master password and open database
@@ -104,12 +104,12 @@ def main():
 
   # print results
   if len(results) == 0:
-    print 'no record found'
-    sys.exit(-2)
+    print >> sys.stderr, '%s: error: no record found' % parser.get_prog_name()
+    sys.exit(1)
 
   if opts.strict and len(results) > 1:
-    print 'multiple records found'
-    sys.exit(-3)
+    print >> sys.stderr, '%s: error: multiple records found (but using --strict mode)' % parser.get_prog_name()
+    sys.exit(1)
 
   for idx, entry in enumerate(results):
     # mark up result
