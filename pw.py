@@ -32,7 +32,7 @@ def main():
 
   # parse command-line options
   parser = argparse.ArgumentParser(description='Grep GPG-encrypted YAML password database.')
-  parser.add_argument('query', metavar='[userquery@]pathquery', nargs='?', default='')
+  parser.add_argument('query', metavar='[user@]path', nargs='?', default='', help='user and path to query for')
   parser.add_argument('-D', '--database', metavar='DB', default=DEFAULT_DATABASE_PATH, help='path to password database')
   parser.add_argument('-E', '--echo', action='store_true', help='echo passwords on console (as opposed to copying them to the clipboard)')
   parser.add_argument('-S', '--strict', action='store_true', help='fail unless precisely a single result has been found')
