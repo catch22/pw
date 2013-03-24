@@ -26,10 +26,12 @@ Usage
   Usage: pw [options] [[userquery@]pathquery]
 
   Options:
-    --version   show program's version number and exit
-    -h, --help  show this help message and exit
-    -E, --echo  display passwords on console (as opposed to copying them to
-                the clipboard)
+    --version     show program's version number and exit
+    -h, --help    show this help message and exit
+    -E, --echo    echo passwords on console (as opposed to copying them to the
+                  clipboard)
+    -S, --strict  fail if more than one result has been found
+
 
 ------------------------------
 Sample ``.passwords.yaml.asc``
@@ -50,7 +52,7 @@ Sample ``.passwords.yaml.asc``
       P: "*****"
       L: ssh://private-server
       N: "With great power comes great responsibility."
-  
+
   Mobile PIN: 12345   # shortcut notation (only provide password)
 
 
