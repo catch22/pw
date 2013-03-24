@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 from collections import namedtuple
 from functools import partial
+import argparse
 import os, os.path
-import optparse
 import signal
 import subprocess
 import sys
@@ -12,7 +12,7 @@ import termcolor
 
 
 def main():
-  VERSION = '%prog 0.3.0'
+  VERSION = '%(prog)s 0.3.1'
   DATABASE_PATH = os.path.join('~', '.passwords.yaml.asc')
   HAVE_COLOR_TERM = os.getenv('COLORTERM') or 'color' in os.getenv('TERM', 'default')
 
@@ -31,15 +31,17 @@ def main():
   color_success = partial(colored, color='green', attrs=['bold', 'reverse'])
 
   # parse command-line options
-  parser = optparse.OptionParser(usage='Usage: %prog [options] [[userquery@]pathquery]', version=VERSION)
-  parser.add_option('-E', '--echo', action='store_true', help='echo passwords on console (as opposed to copying them to the clipboard)')
-  parser.add_option('-S', '--strict', action='store_true', help='fail if more than one result has been found')
-  opts, args = parser.parse_args()
+  parser = argparse.ArgumentParser(description='Grep GPG-encrypted YAML password safe.')
+  parser.add_argument('query', metavar='[userquery@]pathquery', nargs='?', default='')
+  parser.add_argument('-E', '--echo', action='store_true', help='echo passwords on console (as opposed to copying them to the clipboard)')
+  parser.add_argument('-S', '--strict', action='store_true', help='fail unless precisely a single result has been found')
+  parser.add_argument('-v', '--version', action='version', version=VERSION)
+  args = parser.parse_args()
 
   # verify that database file is present
   database_path = os.path.expanduser(DATABASE_PATH)
   if not os.path.exists(database_path):
-    print >> sys.stderr, '%s: error: password database not found at %s' % (parser.get_prog_name(), database_path)
+    print >> sys.stderr, '%s: error: password database not found at %s' % (parser.prog, database_path)
     sys.exit(-1)
 
   # read master password and open database
@@ -93,24 +95,19 @@ def main():
   # sort entries according to normalized path (stability of sorted() ensures that the order of accounts for a given path remains untouched)
   entries = sorted(entries, key=lambda e: e.path)
 
-  # perform query
-  if args:
-    # split at right-most @ sign (user names are typically email addresses)
-    query_user, _, query_path = args[0].rpartition('@')
-    query_path = normalize_path(query_path)
-  else:
-    query_user, query_path = '', ''
+  # parse query (split at right-most "@"" sign, since user names are typically email addresses)
+  query_user, _, query_path = args.query.rpartition('@')
+  query_path = normalize_path(query_path)
+
+  # query database
   results = [e for e in entries if query_path in e.path and ((not query_user) or (e.user and query_user in e.user))]
 
+  # perform strict mode checks
+  if args.strict and len(results) != 1:
+      print >> sys.stderr, '%s: error: multiple or no records found (but using --strict mode)' % parser.prog
+      sys.exit(1)
+
   # print results
-  if len(results) == 0:
-    print >> sys.stderr, '%s: error: no record found' % parser.get_prog_name()
-    sys.exit(1)
-
-  if opts.strict and len(results) > 1:
-    print >> sys.stderr, '%s: error: multiple records found (but using --strict mode)' % parser.get_prog_name()
-    sys.exit(1)
-
   for idx, entry in enumerate(results):
     # mark up result
     path = entry.path
@@ -128,7 +125,7 @@ def main():
     if len(results) == 1:
       # display entry in expanded mode
       print
-      if opts.echo:
+      if args.echo:
         print '  ', color_password(entry.password)
       else:
         xerox.copy(entry.password)
@@ -139,7 +136,7 @@ def main():
         print '  ', entry.notes
     else:
       # otherwise abbreviate results
-      if opts.echo:
+      if args.echo:
         print '|', color_password(entry.password),
       elif idx == 0:
         xerox.copy(entry.password)

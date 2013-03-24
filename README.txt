@@ -23,15 +23,19 @@ Usage
 
 ::
 
-  Usage: pw [options] [[userquery@]pathquery]
+  usage: pw [-h] [-E] [-S] [-v] [[userquery@]pathquery]
 
-  Options:
-    --version     show program's version number and exit
-    -h, --help    show this help message and exit
-    -E, --echo    echo passwords on console (as opposed to copying them to the
-                  clipboard)
-    -S, --strict  fail if more than one result has been found
+  Grep GPG-encrypted YAML password safe.
 
+  positional arguments:
+    [[userquery@]pathquery]
+
+  optional arguments:
+    -h, --help            show this help message and exit
+    -E, --echo            echo passwords on console (as opposed to copying them
+                          to the clipboard)
+    -S, --strict          fail unless precisely a single result has been found
+    -v, --version         show program's version number and exit
 
 ------------------------------
 Sample ``.passwords.yaml.asc``
