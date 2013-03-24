@@ -94,10 +94,10 @@ def main():
   entries = sorted(entries, key=lambda e: e.normalized_path)
 
   # perform query
-  if args and args[0].find('@') != -1:
-    query_user, query_path = map(normalize_path, args[0].split('@'))
-  elif args:
-    query_user, query_path = '', normalize_path(args[0])
+  if args:
+    # split at right-most @ sign (user names are typically email addresses)
+    query_user, _, query_path = args[0].rpartition('@')
+    query_path = normalize_path(query_path)
   else:
     query_user, query_path = '', ''
   results = [e for e in entries if e.normalized_path.find(query_path) != -1 and ((not query_user) or (e.user and e.user.find(query_user) != -1))]
