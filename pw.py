@@ -13,7 +13,7 @@ import termcolor
 
 def main():
   VERSION = '%(prog)s 0.3.1'
-  DATABASE_PATH = os.path.join('~', '.passwords.yaml.asc')
+  DEFAULT_DATABASE_PATH = os.path.join('~', '.passwords.yaml.asc')
   HAVE_COLOR_TERM = os.getenv('COLORTERM') or 'color' in os.getenv('TERM', 'default')
 
   # install silent Ctrl-C handler
@@ -31,15 +31,16 @@ def main():
   color_success = partial(colored, color='green', attrs=['bold', 'reverse'])
 
   # parse command-line options
-  parser = argparse.ArgumentParser(description='Grep GPG-encrypted YAML password safe.')
+  parser = argparse.ArgumentParser(description='Grep GPG-encrypted YAML password database.')
   parser.add_argument('query', metavar='[userquery@]pathquery', nargs='?', default='')
+  parser.add_argument('-D', '--database', metavar='DB', default=DEFAULT_DATABASE_PATH, help='path to password database')
   parser.add_argument('-E', '--echo', action='store_true', help='echo passwords on console (as opposed to copying them to the clipboard)')
   parser.add_argument('-S', '--strict', action='store_true', help='fail unless precisely a single result has been found')
   parser.add_argument('-v', '--version', action='version', version=VERSION)
   args = parser.parse_args()
 
   # verify that database file is present
-  database_path = os.path.expanduser(DATABASE_PATH)
+  database_path = os.path.expanduser(args.database)
   if not os.path.exists(database_path):
     print >> sys.stderr, '%s: error: password database not found at %s' % (parser.prog, database_path)
     sys.exit(-1)
