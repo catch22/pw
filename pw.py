@@ -52,7 +52,7 @@ def main():
   root_node = yaml.load(output)
 
   # create list of entries
-  Entry = namedtuple('Entry', ['normalized_path', 'user', 'password', 'link', 'notes'])
+  Entry = namedtuple('Entry', ['path', 'user', 'password', 'link', 'notes'])
   entries = []
 
   def normalize_path(path):
@@ -65,8 +65,8 @@ def main():
 
     # add entry
     entry = Entry(
-      normalized_path=normalize_path(path),
-      user=unicode(node.get('U', '')),
+      path=normalize_path(path),
+      user=unicode(node['U']) if 'U' in node else None,
       password=str(node.get('P', '')),   # xerox had some problems with unicode strings -> fail early
       link=node.get('L', None),
       notes=node.get('N', None)
@@ -91,7 +91,7 @@ def main():
   collect_entries(root_node, '')
 
   # sort entries according to normalized path (stability of sorted() ensures that the order of accounts for a given path remains untouched)
-  entries = sorted(entries, key=lambda e: e.normalized_path)
+  entries = sorted(entries, key=lambda e: e.path)
 
   # perform query
   if args:
@@ -100,7 +100,7 @@ def main():
     query_path = normalize_path(query_path)
   else:
     query_user, query_path = '', ''
-  results = [e for e in entries if query_path in e.normalized_path and ((not query_user) or (e.user and query_user in e.user))]
+  results = [e for e in entries if query_path in e.path and ((not query_user) or (e.user and query_user in e.user))]
 
   # print results
   if len(results) == 0:
@@ -113,7 +113,7 @@ def main():
 
   for idx, entry in enumerate(results):
     # mark up result
-    path = entry.normalized_path
+    path = entry.path
     user = entry.user if entry.user else ''
     if query_path:
       path = color_match(query_path).join(path.split(query_path))
