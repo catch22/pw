@@ -64,7 +64,7 @@ def main():
 
   def collect_entry(node, path):
     # expand password-only nodes
-    if type(node) != dict:
+    if not isinstance(node, dict):
       node = {'P': node}
 
     # add entry
@@ -79,10 +79,10 @@ def main():
 
   def collect_entries(node, path):
     # list of accounts for the same path?
-    if type(node) == list:
+    if isinstance(node, list):
       for n in node:
         collect_entry(n, path)
-    elif type(node) == dict:
+    elif isinstance(node, dict):
       # account or subtree?
       if 'P' in node:
         collect_entry(node, path)
