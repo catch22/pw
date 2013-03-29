@@ -83,10 +83,10 @@ def main():
         collect_entry(n, path)
     elif type(node) == dict:
       # account or subtree?
-      if node.has_key('P'):
+      if 'P' in node:
         collect_entry(node, path)
       else:
-        for (key,value) in node.iteritems():
+        for (key,value) in node.items():
           collect_entries(value, path + '.' + key if path else key)
     else:
       collect_entry(node, path)
