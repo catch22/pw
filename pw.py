@@ -48,7 +48,7 @@ def main():
 
   # read master password and open database
   popen = subprocess.Popen(["gpg", "--use-agent", "--no-tty", "-qd", database_path], stdout=subprocess.PIPE)
-  output,_ = popen.communicate()
+  output, _ = popen.communicate()
   if popen.returncode:
     sys.exit(-1)
 
@@ -87,7 +87,7 @@ def main():
       if 'P' in node:
         collect_entry(node, path)
       else:
-        for (key,value) in node.items():
+        for (key, value) in node.items():
           collect_entries(value, path + '.' + key if path else key)
     else:
       collect_entry(node, path)
@@ -119,7 +119,7 @@ def main():
     if query_user:
       user = color_match(query_user).join(user.split(query_user))
     if user:
-      print('{}: {}'.format(path,user), end='')
+      print('{}: {}'.format(path, user), end='')
     else:
       print(path, end='')
 
