@@ -43,7 +43,7 @@ def main():
   # verify that database file is present
   database_path = os.path.expanduser(args.database)
   if not os.path.exists(database_path):
-    print('%s: error: password database not found at %s' % (parser.prog, database_path), file=sys.stderr)
+    print('{}: error: password database not found at {}'.format(parser.prog, database_path), file=sys.stderr)
     sys.exit(-1)
 
   # read master password and open database
@@ -106,7 +106,7 @@ def main():
 
   # perform strict mode checks
   if args.strict and len(results) != 1:
-      print('%s: error: multiple or no records found (but using --strict mode)' % parser.prog, file=sys.stderr)
+      print('{}: error: multiple or no records found (but using --strict mode)'.format(parser.prog), file=sys.stderr)
       sys.exit(1)
 
   # print results
@@ -119,7 +119,7 @@ def main():
     if query_user:
       user = color_match(query_user).join(user.split(query_user))
     if user:
-      print('%s: %s' % (path,user), end='')
+      print('{}: {}'.format(path,user), end='')
     else:
       print(path, end='')
 
@@ -128,21 +128,21 @@ def main():
       # display entry in expanded mode
       print()
       if args.echo:
-        print('  ', color_password(entry.password))
+        print('  ' + color_password(entry.password))
       else:
         xerox.copy(entry.password)
-        print('  ', color_success('*** PASSWORD COPIED TO CLIPBOARD ***'))
+        print('  ' + color_success('*** PASSWORD COPIED TO CLIPBOARD ***'))
       if entry.link:
-        print('  ', entry.link)
+        print('  ' + entry.link)
       if entry.notes:
-        print('  ', entry.notes)
+        print('  ' + entry.notes)
     else:
       # otherwise abbreviate results
       if args.echo:
-        print(' |', color_password(entry.password), end='')
+        print(' | ' + color_password(entry.password), end='')
       elif idx == 0:
         xerox.copy(entry.password)
-        print('', color_success('*** PASSWORD COPIED TO CLIPBOARD ***'), end='')
+        print(' ' + color_success('*** PASSWORD COPIED TO CLIPBOARD ***'), end='')
       if entry.link or entry.notes:
         print(' [...]', end='')
       print()
