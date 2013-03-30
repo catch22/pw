@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from __future__ import print_function
+from __future__ import print_function, unicode_literals
 from collections import namedtuple
 from functools import partial
 import argparse
@@ -39,6 +39,10 @@ def main():
   parser.add_argument('-S', '--strict', action='store_true', help='fail unless precisely a single result has been found')
   parser.add_argument('-v', '--version', action='version', version=VERSION)
   args = parser.parse_args()
+
+  # warn user if encoding is not set (only happens for python 2.* and when piping)
+  if sys.stdout.encoding is None:
+    print('{}: warning: python did not detect encoding (you might want to set PYTHONIOENCODING)'.format(parser.prog), file=sys.stderr)
 
   # verify that database file is present
   database_path = os.path.expanduser(args.database)
