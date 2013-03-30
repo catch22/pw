@@ -3,7 +3,8 @@ from __future__ import print_function, unicode_literals
 from collections import namedtuple
 from functools import partial
 import argparse
-import os, os.path
+import os
+import os.path
 import signal
 import subprocess
 import sys

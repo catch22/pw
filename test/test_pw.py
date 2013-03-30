@@ -45,11 +45,13 @@ ssh.my_private_server: root
   With great power comes great responsibility.
 """
 
+
 ENV = {
   'PATH': os.environ['PATH'],
   'LC_ALL': 'en_US.UTF-8',
   'PYTHONIOENCODING': 'utf_8'
 }
+
 
 def test_all():
   os.chdir(os.path.dirname(__file__))
