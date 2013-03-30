@@ -18,7 +18,7 @@ if sys.version_info < (3, 0):
 
 
 def main():
-  VERSION = '%(prog)s 0.3.2'
+  VERSION = '%(prog)s 0.3.3'
   DEFAULT_DATABASE_PATH = os.path.join('~', '.passwords.yaml.asc')
   HAVE_COLOR_TERM = os.getenv('COLORTERM') or 'color' in os.getenv('TERM', 'default')
 
