@@ -3,7 +3,7 @@ from os.path import join, dirname, abspath
 
 setup(
   name = 'pw',
-  version = '0.3.1',
+  version = '0.3.2',
   description = 'Grep GPG-encrypted YAML password safe.',
   author = 'Michael Walter',
   author_email = 'michael.walter@gmail.com',
@@ -13,7 +13,8 @@ setup(
     'console_scripts': ['pw = pw:main']
   },
   classifiers = [
-    'Programming Language :: Python',
+    'Programming Language :: Python :: 2',
+    'Programming Language :: Python :: 3',
     'Development Status :: 4 - Beta',
     'Environment :: Console',
     'License :: OSI Approved :: MIT License',
