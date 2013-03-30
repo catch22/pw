@@ -51,13 +51,17 @@ def main():
     sys.exit(-1)
 
   # read master password and open database
-  popen = subprocess.Popen(["gpg", "--use-agent", "--no-tty", "-qd", database_path], stdout=subprocess.PIPE)
-  output, _ = popen.communicate()
-  if popen.returncode:
-    sys.exit(-1)
+  _, ext = os.path.splitext(database_path)
+  if ext in [".gpg", ".asc"]:
+    popen = subprocess.Popen(["gpg", "--use-agent", "--no-tty", "-qd", database_path], stdout=subprocess.PIPE)
+    database_contents, _ = popen.communicate()
+    if popen.returncode:
+      sys.exit(-1)
+  else:
+    database_contents = open(database_path).read()
 
   # parse YAML
-  root_node = yaml.load(output)
+  root_node = yaml.load(database_contents)
 
   # create list of entries
   Entry = namedtuple('Entry', ['path', 'user', 'password', 'link', 'notes'])
