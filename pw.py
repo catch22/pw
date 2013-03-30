@@ -12,6 +12,10 @@ import yaml
 import termcolor
 
 
+if sys.version_info < (3, 0):
+  str = unicode
+
+
 def main():
   VERSION = '%(prog)s 0.3.2'
   DEFAULT_DATABASE_PATH = os.path.join('~', '.passwords.yaml.asc')
@@ -79,7 +83,7 @@ def main():
     entry = Entry(
       path=normalize_path(path),
       user=node.get('U', None),
-      password=node.get('P', ''),
+      password=str(node.get('P', '')),  # convert integer passwords to string
       link=node.get('L', None),
       notes=node.get('N', None)
     )
