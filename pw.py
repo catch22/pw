@@ -143,7 +143,8 @@ def main():
       if args.echo:
         print('  ' + color_password(entry.password))
       else:
-        xerox.copy(entry.password)
+        password = entry.password.encode('utf8')   # xerox cannot handle "unicode strings" on windows
+        xerox.copy(password)
         print('  ' + color_success('*** PASSWORD COPIED TO CLIPBOARD ***'))
       if entry.link:
         print('  ' + entry.link)
