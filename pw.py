@@ -10,6 +10,7 @@ import subprocess
 import sys
 import xerox
 import yaml
+import colorama
 import termcolor
 
 
@@ -20,7 +21,8 @@ if sys.version_info < (3, 0):
 def main():
   VERSION = '%(prog)s 0.3.3'
   DEFAULT_DATABASE_PATH = os.path.join('~', '.passwords.yaml.asc')
-  HAVE_COLOR_TERM = os.getenv('COLORTERM') or 'color' in os.getenv('TERM', 'default')
+  HAVE_COLOR_TERM = os.getenv('COLORTERM') or 'color' in os.getenv('TERM', 'default') or \
+    sys.platform == 'win32' # thanks to colorama
 
   # install silent Ctrl-C handler
   def handle_sigint(*_):
@@ -29,6 +31,7 @@ def main():
   signal.signal(signal.SIGINT, handle_sigint)
 
   # disable termcolor for terminals not supporting color
+  colorama.init()
   colored = termcolor.colored if HAVE_COLOR_TERM else lambda text, *args, **kwargs: text
 
   # color wrappers
@@ -143,8 +146,7 @@ def main():
       if args.echo:
         print('  ' + color_password(entry.password))
       else:
-        password = entry.password.encode('utf8')   # xerox cannot handle "unicode strings" on windows
-        xerox.copy(password)
+        xerox.copy(entry.password)
         print('  ' + color_success('*** PASSWORD COPIED TO CLIPBOARD ***'))
       if entry.link:
         print('  ' + entry.link)
