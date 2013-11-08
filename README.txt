@@ -60,6 +60,9 @@ It uses a straighforward `YAML <http://www.yaml.org/>`_ format as in the followi
       P: "*****"
       L: ssh://private-server
       N: "With great power comes great responsibility."
+    (An Old Entry That Is Ignored):
+      U: foo
+      P: bar
 
   Mobile:
     PIN: 12345   # shortcut notation (only provide password)

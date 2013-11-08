@@ -19,7 +19,7 @@ if sys.version_info < (3, 0):
 
 
 def main():
-  VERSION = '%(prog)s 0.3.3'
+  VERSION = '%(prog)s 0.3.4'
   DEFAULT_DATABASE_PATH = os.path.join('~', '.passwords.yaml.asc')
   HAVE_COLOR_TERM = os.getenv('COLORTERM') or 'color' in os.getenv('TERM', 'default') or \
     sys.platform == 'win32' # thanks to colorama
@@ -104,7 +104,9 @@ def main():
         collect_entry(node, path)
       else:
         for (key, value) in node.items():
-          collect_entries(value, path + '.' + key if path else key)
+          # ignore entries in parentheses
+          if not (key.startswith('(') and key.endswith(')')):
+            collect_entries(value, path + '.' + key if path else key)
     else:
       collect_entry(node, path)
 
