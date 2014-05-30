@@ -1,0 +1,4 @@
+# Instructions to Publish a New Release
+
+* Change version number in `pw/__init__.py`.
+* Run `python setup.py sdist upload`.
