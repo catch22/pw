@@ -142,8 +142,7 @@ def pw(query, database_path, copy, echo, open, strict):
     if entry.notes:
       output += ' | ' + entry.notes
     output += '\n'
-  click.echo(output)
-
+  click.echo(output)   # echo_via_pager has some unicode problems & can remove the colors
 
 if __name__ == '__main__':
   pw()
