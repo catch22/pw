@@ -1,7 +1,6 @@
-from __future__ import print_function, unicode_literals
 from collections import namedtuple
 import os.path, subprocess, sys
-import yaml
+import click, yaml
 try:
   from yaml import CLoader as Loader
 except ImportError:
