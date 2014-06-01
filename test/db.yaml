@@ -1,0 +1,19 @@
+# single account
+laptop:
+  - U: alice
+    P: '4l1c3'
+  - U: bob
+    P: 'b0b'
+
+# list of accounts
+goggles:
+  - U: alice@gogglemail.com
+    P: '12345'
+    L: https://mail.goggles.com/
+  - U: bob+spam@gogglemail.com
+    P: 'abcde'
+
+# nested accounts
+phones:
+  myphone: '0000'
+  samson: '111'
