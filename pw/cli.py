@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-from __future__ import print_function, unicode_literals
 from functools import partial
 import os, os.path, signal, subprocess, sys, tempfile, time
 import click
@@ -95,10 +94,6 @@ def pw(query, database_path, copy, echo, open, strict):
     click.echo()
     sys.exit(1)
   signal.signal(signal.SIGINT, handle_sigint)
-
-  # warn user if encoding is not set (only happens for python 2.* and when piping)
-  if sys.stdout.encoding is None:
-    click.echo('warning: python did not detect encoding (you might want to set PYTHONIOENCODING', file=sys.stderr)
 
   # load database
   db = Database.load(database_path)
