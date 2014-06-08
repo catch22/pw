@@ -10,7 +10,7 @@ if sys.version_info < (3, 0):
   str = unicode
 
 
-__version__ = '0.5.1-dev'
+__version__ = '0.5.1'
 
 
 GPG_ENCRYPTION_COMMANDS = {
