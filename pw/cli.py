@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 from functools import partial
-import os, os.path, signal, subprocess, sys, tempfile, time
+import os, os.path, pipes, signal, subprocess, sys, tempfile, time
 import click
 import xerox
 from . import __version__, Database, gpg_encrypt
@@ -28,7 +28,8 @@ def wait_for_editor(path):
     click.echo('error: no editor set in PW_EDITOR environment variables')
     sys.exit(1)
   click.echo("waiting for editor...")
-  return subprocess.check_call(editor.split() + [path], shell=True)
+  cmd = editor + " " + pipes.quote(path)
+  return subprocess.check_call(cmd, shell=True)
 
 def edit_database(ctx, value):
   """edit password database and exit"""
