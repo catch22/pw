@@ -10,7 +10,7 @@ if sys.version_info < (3, 0):
   str = unicode
 
 
-__version__ = '0.6'
+__version__ = '0.7-dev'
 
 
 # GPG
