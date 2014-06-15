@@ -6,3 +6,4 @@
 pw.sublime-workspace
 /test/.coverage
 /test/htmlcov
+/test/keys/random_seed
