@@ -18,13 +18,15 @@ GPG_EXTENSIONS = ['.gpg', '.asc']
 GPG_ARMOR = {'.gpg': False, '.asc':  True}
 
 def gpg_decrypt(path):
-  gpg = gnupg.GPG(use_agent=True)
-  return str(gpg.decrypt_file(open(path, "rb")))
+  gpg = gnupg.GPG(gnupghome=os.environ.get('PW_GPG_HOMEDIR'), use_agent=True)
+  data = gpg.decrypt_file(open(path, "rb"))
+  assert data.ok, data.status
+  return str(data)
 
 def gpg_encrypt(recipient, src_path, dest_path):
   """encrypt file for given recipient"""
   _, ext = os.path.splitext(dest_path)
-  gpg = gnupg.GPG(use_agent=True)
+  gpg = gnupg.GPG(gnupghome=os.environ.get('PW_GPG_HOMEDIR'), use_agent=True)
   gpg.encrypt_file(open(src_path, "rb"), recipient, armor=GPG_ARMOR[ext], output=dest_path)
 
 
