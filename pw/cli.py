@@ -18,7 +18,7 @@ def print_version(ctx, value):
   """print version information and exit"""
   if not value:
     return
-  click.echo('pw %s (python)' % __version__)
+  click.echo('pw %s' % __version__)
   ctx.exit()
 
 
