@@ -1,5 +1,6 @@
+# python 3 fix is not yet on pypi
+git+https://github.com/kennethreitz/xerox.git#egg=xerox
 PyYAML
-xerox
 python-gnupg
 click
 colorama
