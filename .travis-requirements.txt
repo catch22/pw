@@ -1,0 +1,6 @@
+PyYAML
+xerox
+python-gnupg
+click
+colorama
+pytest

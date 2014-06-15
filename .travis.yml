@@ -1,0 +1,9 @@
+language: python
+python:
+  - "2.7"
+  - "pypy"
+  # "3.4" currently fails due to pypi's xerox being outdated
+
+install: "pip install -r .travis-requirements.txt"
+
+script: make test
