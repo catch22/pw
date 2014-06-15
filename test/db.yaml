@@ -2,6 +2,7 @@
 laptop:
   - U: alice
     P: '4l1c3'
+    N: "default user"
   - U: bob
     P: 'b0b'
 
@@ -13,7 +14,13 @@ goggles:
   - U: bob+spam@gogglemail.com
     P: 'abcde'
 
+# single account
+router:
+  U: ädmin
+  P: 'gamma zeta'
+
 # nested accounts
 phones:
   myphone: '0000'
   samson: '111'
+  (ignore this old phone): '123'
