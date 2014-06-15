@@ -1,13 +1,13 @@
 from setuptools import setup
-import ast, codecs, re
+import ast, io, re
 from os.path import join, dirname, abspath
 
 
 # determine __version__ from pw.py source (adapted from mitsuhiko)
 VERSION_RE = re.compile(r'__version__\s+=\s+(.*)')
 
-with codecs.open('pw/__init__.py', encoding='utf-8') as fp:
-  version_code = VERSION_RE.search(fp.read().decode('utf-8')).group(1)
+with io.open('pw/__init__.py', encoding='utf-8') as fp:
+  version_code = VERSION_RE.search(fp.read()).group(1)
   version = str(ast.literal_eval(version_code))
 
 
@@ -30,7 +30,7 @@ setup(
     'Environment :: Console',
     'License :: OSI Approved :: MIT License',
   ],
-  long_description=codecs.open(join(dirname(abspath(__file__)), 'README'), encoding='utf-8').read(),
+  long_description=io.open(join(dirname(abspath(__file__)), 'README'), encoding='utf-8').read(),
   install_requires=['PyYAML', 'xerox', 'python-gnupg', 'click>=2.0'],
   extras_require={'color': ['colorama']},
   tests_require = ['pytest'],
