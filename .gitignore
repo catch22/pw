@@ -4,3 +4,5 @@
 /build/
 /pw.egg-info/
 pw.sublime-workspace
+/test/.coverage
+/test/htmlcov
