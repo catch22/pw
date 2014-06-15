@@ -31,6 +31,6 @@ setup(
     'License :: OSI Approved :: MIT License',
   ],
   long_description=open(join(dirname(abspath(__file__)), 'README')).read(),
-  install_requires=['PyYAML', 'xerox', 'click>=2.0'],
+  install_requires=['PyYAML', 'xerox', 'python-gnupg', 'click>=2.0'],
   extras_require={'color': ['colorama']}
 )

@@ -1,6 +1,6 @@
 from collections import namedtuple
 import os.path, subprocess, sys
-import click, yaml
+import click, gnupg, yaml
 try:
   from yaml import CLoader as Loader
 except ImportError:
@@ -10,30 +10,25 @@ if sys.version_info < (3, 0):
   str = unicode
 
 
-__version__ = '0.5.1'
+__version__ = '0.6-dev'
 
 
-GPG_ENCRYPTION_COMMANDS = {
-  '.gpg': ['--encrypt'],
-  '.asc': ['--armor', '--encrypt'],
-}
-GPG_EXTENSIONS = GPG_ENCRYPTION_COMMANDS.keys()
+# GPG
+GPG_EXTENSIONS = ['.gpg', '.asc']
+GPG_ARMOR = {'.gpg': False, '.asc':  True}
 
 def gpg_decrypt(path):
-  """return decrypted contents"""
-  popen = subprocess.Popen(["gpg", "--use-agent", "--no-tty", "-q", "--decrypt", path], stdout=subprocess.PIPE)
-  contents, _ = popen.communicate()
-  if popen.returncode:
-    sys.exit(1)
-  return contents
+  gpg = gnupg.GPG(use_agent=True)
+  return str(gpg.decrypt_file(open(path, "rb")))
 
 def gpg_encrypt(recipient, src_path, dest_path):
   """encrypt file for given recipient"""
   _, ext = os.path.splitext(dest_path)
-  subprocess.check_call(["gpg", "--use-agent", "--no-tty", "-q", "--yes", "--recipient", recipient, "--output", dest_path] + GPG_ENCRYPTION_COMMANDS[ext] + [src_path])
+  gpg = gnupg.GPG(use_agent=True)
+  gpg.encrypt_file(open(src_path, "rb"), recipient, armor=GPG_ARMOR[ext], output=dest_path)
 
 
-# Database
+# Entry and Database
 def normalize_key(key):
   return key.replace(' ', '_').lower()
 
