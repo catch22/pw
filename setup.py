@@ -11,6 +11,15 @@ with io.open('pw/__init__.py', encoding='utf-8') as fp:
   version = str(ast.literal_eval(version_code))
 
 
+# read long description and convert to RST
+long_description = io.open(join(dirname(abspath(__file__)), 'README.md'), encoding='utf-8').read()
+try:
+  import pypandoc
+  long_description = pypandoc.convert(long_description, 'rst', format='md')
+except ImportError:
+  pass
+
+
 # package metadata
 setup(
   name='pw',
@@ -30,7 +39,7 @@ setup(
     'Environment :: Console',
     'License :: OSI Approved :: MIT License',
   ],
-  long_description=io.open(join(dirname(abspath(__file__)), 'README'), encoding='utf-8').read(),
+  long_description=long_description,
   install_requires=['PyYAML', 'xerox', 'python-gnupg', 'click>=2.0'],
   extras_require={'color': ['colorama']},
   tests_require = ['pytest'],

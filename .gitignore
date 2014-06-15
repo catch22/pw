@@ -1,5 +1,6 @@
 *.pyc
 .tox
 /dist/
+/build/
 /pw.egg-info/
 pw.sublime-workspace
