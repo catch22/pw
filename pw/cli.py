@@ -126,7 +126,7 @@ def pw(query, database_path, copy, echo, open, strict):
     if echo:
       output += ' | ' + style_password(entry.password)
     if copy and idx == 0:
-      xerox.copy(bytes(entry.password))
+      xerox.copy(entry.password)
       output += ' | ' + style_success('*** PASSWORD COPIED TO CLIPBOARD ***')
 
     # other info
