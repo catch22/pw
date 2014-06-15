@@ -2,3 +2,4 @@
 .tox
 /dist/
 /pw.egg-info/
+pw.sublime-workspace
