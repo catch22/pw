@@ -21,7 +21,7 @@ def gpg_decrypt(path):
   gpg = gnupg.GPG(gnupghome=os.environ.get('PW_GPG_HOMEDIR'), use_agent=True)
   data = gpg.decrypt_file(open(path, "rb"))
   assert data.ok, data.status
-  return str(data)
+  return data.data
 
 def gpg_encrypt(recipient, src_path, dest_path):
   """encrypt file for given recipient"""
@@ -75,7 +75,7 @@ class Database:
       src = gpg_decrypt(path)
       return src, True
 
-    src = open(path).read()
+    src = open(path, 'rb').read()
     return src, False
 
   @staticmethod
