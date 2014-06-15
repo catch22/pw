@@ -102,7 +102,7 @@ class Database:
       return
 
     # otherwise: subtree!
-    for key, child_node in current_node.iteritems():
+    for key, child_node in current_node.items():
       # ignore entries in parentheses
       if key.startswith('('):
         continue
