@@ -5,6 +5,7 @@ python:
   # "3.4" currently fails due to pypi's xerox being outdated
 
 install:
+  - apt-get install -qq xclip
   - pip install -r .travis-requirements.txt
   - pip install --editable .
 
