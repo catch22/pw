@@ -5,8 +5,12 @@ python:
   # "3.4" currently fails due to pypi's xerox being outdated
 
 install:
-  - sudo apt-get install -qq xclip
-  - pip install -r .travis-requirements.txt
-  - pip install --editable .
+  - "sudo apt-get install -qq xclip"
+  - "pip install -r .travis-requirements.txt"
+  - "pip install --editable ."
 
+before_install:
+  - "export DISPLAY=:99.0"
+  - "sh -e /etc/init.d/xvfb start"
+  
 script: make test
