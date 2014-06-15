@@ -1,4 +1,4 @@
-# pw
+# pw [![Build Status](https://travis-ci.org/catch22/pw.svg?branch=master)](https://travis-ci.org/catch22/pw)
 
 `pw` is a Python tool to search in a GPG-encrypted password database.
 
