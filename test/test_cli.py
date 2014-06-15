@@ -11,7 +11,7 @@ DIRNAME = os.path.dirname(os.path.abspath(__file__))
 
 def invoke_cli(*args, **kwargs):
   # determine db path
-  assert kwargs.keys() == [] or kwargs.keys() == ['db_path']
+  assert not kwargs.keys() or list(kwargs.keys()) == ['db_path']
   db_path = kwargs.get('db_path', 'db.yaml')
   db_path = os.path.join(DIRNAME, db_path)
 
