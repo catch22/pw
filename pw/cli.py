@@ -14,9 +14,9 @@ style_password = partial(click.style, fg='red', bold=True)
 style_success = partial(click.style, fg='green', bold=True, reverse=True)
 
 
-def print_version(ctx, value):
+def print_version(ctx, param, value):
   """print version information and exit"""
-  if not value:
+  if not value or ctx.resilient_parsing:
     return
   click.echo('pw %s' % __version__)
   ctx.exit()
@@ -31,9 +31,9 @@ def wait_for_editor(path):
   cmd = editor + " " + pipes.quote(path)
   return subprocess.check_call(cmd, shell=True)
 
-def edit_database(ctx, value):
+def edit_database(ctx, param, value):
   """edit password database and exit"""
-  if not value:
+  if not value or ctx.resilient_parsing:
     return
 
   # load database contents
