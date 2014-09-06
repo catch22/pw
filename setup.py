@@ -28,13 +28,16 @@ setup(
   author='Michael Walter',
   author_email='michael.walter@gmail.com',
   url='https://github.com/catch22/pw',
+  license='MIT',
   packages = ['pw'],
   entry_points={
     'console_scripts': ['pw = pw.cli:pw']
   },
   classifiers=[
     'Programming Language :: Python :: 2',
+    'Programming Language :: Python :: 2.7',
     'Programming Language :: Python :: 3',
+    'Programming Language :: Python :: 3.4',
     'Development Status :: 4 - Beta',
     'Environment :: Console',
     'License :: OSI Approved :: MIT License',
