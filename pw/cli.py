@@ -81,10 +81,10 @@ def edit_database(ctx, param, value):
 
 @click.command()
 @click.argument('query', metavar='[USER@][KEY]', default='')
-@click.option('--copy/--no-copy', default=True, help='copy password to clipboard')
+@click.option('--copy/--no-copy', default=True, help='copy password to clipboard (default)')
 @click.option('--echo/--no-echo', '-E', help='print password to console')
-@click.option('--open/--no-open', help='open link in browser')
-@click.option('--strict/--no-strict', help='fail unless precisely a single result has been found')
+@click.option('--open/--no-open', '-L', help='open link in browser')
+@click.option('--strict/--no-strict', '-S', help='fail unless precisely a single result has been found')
 @click.option('--database-path', metavar='PATH', is_eager=True, default=Database.default_path(), help='path to password database')
 @click.option('--edit', is_flag=True, expose_value=False, is_eager=True, callback=edit_database, help='launch editor to edit password database')
 @click.option('--version', '-v', is_flag=True, expose_value=False, is_eager=True, callback=print_version, help='print version information and exit')
