@@ -40,7 +40,7 @@ setup(
     'License :: OSI Approved :: MIT License',
   ],
   long_description=long_description,
-  install_requires=['PyYAML', 'xerox', 'python-gnupg', 'click>=2.0'],
+  install_requires=['PyYAML', 'xerox', 'python-gnupg', 'click>=3.2'],
   extras_require={'color': ['colorama']},
   tests_require = ['pytest'],
 )
