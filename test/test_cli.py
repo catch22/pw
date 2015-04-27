@@ -120,6 +120,31 @@ def test_strict():
   assert isinstance(result.exception, SystemExit) and result.exit_code != 0
 
 
+def test_raw():
+  # single result
+  expected = "0000"
+  result = invoke_cli('--no-copy', '--no-echo', '--raw', 'myphone')
+  assert not result.exception and result.exit_code == 0
+  assert result.output.strip() == expected.strip()
+
+  # single result and strict
+  expected = "0000"
+  result = invoke_cli('--no-copy', '--no-echo', '--raw', '--strict', 'myphone')
+  assert not result.exception and result.exit_code == 0
+  assert result.output.strip() == expected.strip()
+
+  # multiple results
+  expected = """0000
+111"""
+  result = invoke_cli('--no-copy', '--no-echo', '--raw', 'phones')
+  assert not result.exception and result.exit_code == 0
+  assert result.output.strip() == expected.strip()
+
+  # multiple results and strict (expect failure)
+  result = invoke_cli('--no-copy', '--no-echo', '--raw', '--strict', 'phones')
+  assert isinstance(result.exception, SystemExit) and result.exit_code != 0
+
+
 def test_gpg():
   expected = "pin | *** PASSWORD COPIED TO CLIPBOARD ***"
 

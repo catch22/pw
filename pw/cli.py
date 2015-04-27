@@ -85,10 +85,11 @@ def edit_database(ctx, param, value):
 @click.option('--echo/--no-echo', '-E', help='print password to console')
 @click.option('--open/--no-open', '-L', help='open link in browser')
 @click.option('--strict/--no-strict', '-S', help='fail unless precisely a single result has been found')
+@click.option('--raw/--no-raw', help='output password only')
 @click.option('--database-path', metavar='PATH', is_eager=True, default=Database.default_path(), help='path to password database')
 @click.option('--edit', is_flag=True, expose_value=False, is_eager=True, callback=edit_database, help='launch editor to edit password database')
 @click.option('--version', '-v', is_flag=True, expose_value=False, is_eager=True, callback=print_version, help='print version information and exit')
-def pw(query, database_path, copy, echo, open, strict):
+def pw(query, database_path, copy, echo, open, strict, raw):
   """Search for USER and KEY in GPG-encrypted password database."""
   # install silent Ctrl-C handler
   def handle_sigint(*_):
@@ -108,6 +109,12 @@ def pw(query, database_path, copy, echo, open, strict):
   if strict and len(results) != 1:
     click.echo('error: multiple or no records found (but using --strict mode)', file=sys.stderr)
     sys.exit(1)
+
+  # raw mode?
+  if raw:
+    for entry in results:
+      click.echo(entry.password)
+    return
 
   # sort results according to key (stability of sorted() ensures that the order of accounts for any given key remains untouched)
   results = sorted(results, key=lambda e: e.key)
