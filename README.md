@@ -8,14 +8,15 @@ Usage: pw [OPTIONS] [USER@][KEY]
   Search for USER and KEY in GPG-encrypted password database.
 
 Options:
-  --copy / --no-copy      copy password to clipboard
-  -E, --echo / --no-echo  print password to console
-  --open / --no-open      open link in browser
-  --strict / --no-strict  fail unless precisely a single result has been found
-  --database-path PATH    path to password database
-  --edit                  launch editor to edit password database
-  -v, --version           print version information and exit
-  --help                  Show this message and exit.
+  --copy / --no-copy          copy password to clipboard (default)
+  -E, --echo / --no-echo      print password to console
+  -L, --open / --no-open      open link in browser
+  -S, --strict / --no-strict  fail unless precisely a single result has been found
+  --raw / --no-raw            output password only
+  --database-path PATH        path to password database
+  --edit                      launch editor to edit password database
+  -v, --version               print version information and exit
+  --help                      Show this message and exit.
 ```
 
 
