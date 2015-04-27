@@ -134,11 +134,10 @@ def test_raw():
   assert result.output.strip() == expected.strip()
 
   # multiple results
-  expected = """0000
-111"""
+  expected = {"0000", "111"}
   result = invoke_cli('--no-copy', '--no-echo', '--raw', 'phones')
   assert not result.exception and result.exit_code == 0
-  assert result.output.strip() == expected.strip()
+  assert {line.strip() for line in result.output.splitlines()} == expected
 
   # multiple results and strict (expect failure)
   result = invoke_cli('--no-copy', '--no-echo', '--raw', '--strict', 'phones')
