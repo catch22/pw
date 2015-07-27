@@ -130,14 +130,14 @@ def pw(key_pattern, user_pattern, file, copy, echo, strict, raw):
             file=sys.stderr)
         sys.exit(2)
 
+    # sort results according to key (stability of sorted() ensures that the order of accounts for any given key remains untouched)
+    results = sorted(results, key=lambda e: e.key)
+
     # raw mode?
     if raw:
         for entry in results:
             click.echo(entry.password)
         return
-
-    # sort results according to key (stability of sorted() ensures that the order of accounts for any given key remains untouched)
-    results = sorted(results, key=lambda e: e.key)
 
     # print results
     output = ''
