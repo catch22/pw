@@ -43,6 +43,6 @@ setup(
     'License :: OSI Approved :: MIT License',
   ],
   long_description=long_description,
-  install_requires=['click>=4.1', 'colorama', 'xerox'],
+  install_requires=['click>=4.1', 'colorama', 'xerox', 'ushlex'],
   tests_require = ['pytest', 'PyYAML'],
 )
