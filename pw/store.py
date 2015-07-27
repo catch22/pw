@@ -1,6 +1,9 @@
 import os.path
 from collections import namedtuple
-from StringIO import StringIO
+try:
+    from StringIO import StringIO
+except ImportError:
+    from io import StringIO
 from shlex import shlex
 from . import _gpg
 
