@@ -87,8 +87,8 @@ def _parse_entries(src):
             continue
 
         # parse line using shlex
-        bio = StringIO(line)
-        lexer = shlex(bio, posix=True)
+        sio = StringIO(line)
+        lexer = shlex(sio, posix=True)
         lexer.whitespace_split = True
 
         # otherwise, parse as an entry
@@ -108,7 +108,7 @@ def _parse_entries(src):
             user = notes = ''
         else:
             password = password
-            notes = bio.read().strip()
+            notes = sio.read().strip()
 
         entries.append(Entry(key, user, password, notes))
         state = EXPECT_ENTRY_OR_NOTES
