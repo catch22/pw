@@ -175,7 +175,7 @@ def pw(key_pattern, user_pattern, file, copy, echo, strict, raw):
                 if len(lines) > 1:
                     output += " (...)"
         output += '\n'
-    click.echo_via_pager(output.rstrip())
+    click.echo(output.rstrip())
 
 
 if __name__ == '__main__':
