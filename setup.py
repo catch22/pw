@@ -44,5 +44,5 @@ setup(
   ],
   long_description=long_description,
   install_requires=['click>=4.1', 'colorama', 'xerox'],
-  tests_require = ['pytest'],
+  tests_require = ['pytest', 'PyYAML'],
 )
