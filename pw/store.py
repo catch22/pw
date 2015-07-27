@@ -1,9 +1,6 @@
 import os.path
 from collections import namedtuple
-try:
-    from StringIO import StringIO
-except ImportError:
-    from io import StringIO
+from io import StringIO
 from shlex import shlex
 from . import _gpg
 
@@ -66,7 +63,7 @@ def _parse_entries(src):
     entries = []
     state = EXPECT_ENTRY
 
-    for lineno, line in enumerate(src.splitlines()):
+    for lineno, line in enumerate(src.decode('utf-8').splitlines()):
         # empty lines are skipped (but also terminate the notes section)
         sline = line.strip()
         if not sline or sline.startswith('#'):
@@ -87,28 +84,28 @@ def _parse_entries(src):
             continue
 
         # parse line using shlex
-        sio = StringIO(line)
-        lexer = shlex(sio, posix=True)
+        bio = StringIO(line)
+        lexer = shlex(bio, posix=True)
         lexer.whitespace_split = True
 
         # otherwise, parse as an entry
         key = lexer.get_token()
         if not key:
             raise SyntaxError(lineno, line, state)
-        key = key.decode('utf-8').rstrip(':')
+        key = key.rstrip(':')
 
         user = lexer.get_token()
         if not user:
             raise SyntaxError(lineno, line, state)
-        user = user.decode('utf-8')
+        user = user
 
         password = lexer.get_token()
         if not password:
             password = user
             user = notes = ''
         else:
-            password = password.decode('utf-8')
-            notes = sio.read().strip()
+            password = password
+            notes = bio.read().strip()
 
         entries.append(Entry(key, user, password, notes))
         state = EXPECT_ENTRY_OR_NOTES

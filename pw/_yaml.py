@@ -1,16 +1,19 @@
 from __future__ import absolute_import
 from .store import Entry
-import warnings
+import sys, warnings
+
+if sys.version_info[0] < 3:
+    str = unicode
 
 EXTENSIONS = ['.yaml', '.yml']
 
 
 def make_entry(key, dict):
-    notes = ' | '.join(unicode(dict[key]) for key in ['L', 'N'] if key in dict)
+    notes = ' | '.join(str(dict[key]) for key in ['L', 'N'] if key in dict)
     return Entry(
         key=key,
-        user=unicode(dict.get('U', '')),
-        password=unicode(dict.get('P', '')),
+        user=str(dict.get('U', '')),
+        password=str(dict.get('P', '')),
         notes=notes)
 
 
@@ -44,7 +47,7 @@ def _collect_entries(current_node, current_key):
     if not isinstance(current_node, dict):
         yield Entry(key=current_key,
                     user='',
-                    password=unicode(current_node),
+                    password=str(current_node),
                     notes='')
         return
 

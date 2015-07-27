@@ -97,4 +97,4 @@ def test_echo_vs_copy(runner, args, exit_code, output_expected,
     result = runner(*args)
     assert result.exit_code == exit_code
     assert result.output.strip() == output_expected.strip()
-    assert xerox.paste() == clipboard_expected.strip()
+    assert xerox.paste().decode('utf-8') == clipboard_expected.strip()
