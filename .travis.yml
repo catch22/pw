@@ -5,7 +5,8 @@ python:
   - "pypy"
 
 install:
-  - "sudo apt-get install -qq xclip"
+  - "sudo apt-get update -qq"
+  - "sudo apt-get install -qq xclip gnupg2"
   - "pip install -r .travis-requirements.txt"
   - "pip install --editable ."
 
