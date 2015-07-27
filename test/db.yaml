@@ -10,7 +10,7 @@ laptop:
 goggles:
   - U: alice@gogglemail.com
     P: '12345'
-    L: https://mail.goggles.com/
+    N: "https://mail.goggles.com/\nsecond line"
   - U: bob+spam@gogglemail.com
     P: 'abcde'
 
@@ -18,6 +18,7 @@ goggles:
 router:
   U: ädmin
   P: 'gamma zeta'
+  N: "multiple\nlines\nof\nnotes"
 
 # nested accounts
 phones:

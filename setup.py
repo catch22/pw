@@ -31,7 +31,7 @@ setup(
   license='MIT',
   packages = ['pw'],
   entry_points={
-    'console_scripts': ['pw = pw.cli:pw']
+    'console_scripts': ['pw = pw.__main__:pw']
   },
   classifiers=[
     'Programming Language :: Python :: 2',
@@ -43,7 +43,6 @@ setup(
     'License :: OSI Approved :: MIT License',
   ],
   long_description=long_description,
-  install_requires=['PyYAML', 'xerox', 'python-gnupg', 'click>=3.2'],
-  extras_require={'color': ['colorama']},
+  install_requires=['click>=4.1', 'colorama', 'xerox'],
   tests_require = ['pytest'],
 )

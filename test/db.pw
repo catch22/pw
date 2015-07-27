@@ -1,0 +1,20 @@
+# single account
+laptop: alice 4l1c3 default user
+laptop: bob b0b
+
+# multiple accounts
+goggles: alice@gogglemail.com 12345 https://mail.goggles.com/
+  second line
+goggles: bob+spam@gogglemail.com abcde
+
+# utf-8
+router: ädmin "gamma zeta"
+  multiple
+  lines
+  of
+  notes
+
+# nested accounts
+phones.myphone: 0000
+phones.samson: 111
+# phones.ignore_this_old_phone: 123

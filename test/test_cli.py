@@ -1,158 +1,100 @@
 # coding: utf-8
 from __future__ import unicode_literals
 from functools import partial
-import os
 from click.testing import CliRunner
-import pw, pw.cli
+import os.path
+import pytest
+import pw, pw.__main__
 import xerox
 
 
-DIRNAME = os.path.dirname(os.path.abspath(__file__))
+@pytest.fixture(scope='module',
+                params=['db.pw', 'db.pw.gpg', 'db.pw.asc', 'db.yaml'])
+def runner(request):
+    # override GPG homedir
+    dirname = os.path.dirname(os.path.abspath(__file__))
+    pw._gpg.OVERRIDE_HOMEDIR = os.path.join(dirname, 'keys')
 
-def invoke_cli(*args, **kwargs):
-  # determine db path
-  assert not kwargs.keys() or list(kwargs.keys()) == ['db_path']
-  db_path = kwargs.get('db_path', 'db.yaml')
-  db_path = os.path.join(DIRNAME, db_path)
-
-  # run CLI
-  runner = CliRunner()
-  os.environ['PW_GPG_HOMEDIR'] = os.path.join(DIRNAME, 'keys')
-  return runner.invoke(pw.cli.pw, ['--database-path', db_path] + list(args))
+    # instantiate runner and provide database path
+    runner = CliRunner()
+    return (
+        lambda *args: runner.invoke(pw.__main__.pw, ('--file', request.param, ) + args)
+    )
 
 
-def test_basic():
-  expected = u"""
-goggles: alice@gogglemail.com | *** PASSWORD COPIED TO CLIPBOARD *** | https://mail.goggles.com/
+@pytest.mark.parametrize("args, exit_code, output_expected", [
+    # version
+    (["--version"], 0, "pw version " + pw.__version__),
+    # default options (requires xerox)
+    ([], 0, """
+goggles: alice@gogglemail.com
+   https://mail.goggles.com/
+   second line
 goggles: bob+spam@gogglemail.com
 laptop: alice | default user
 laptop: bob
 phones.myphone
 phones.samson
-router: ädmin
-"""
-  result = invoke_cli()
-  assert not result.exception and result.exit_code == 0
-  assert result.output.strip() == expected.strip()
-
-
-def test_version():
-  result = invoke_cli('--version')
-  assert not result.exception and result.exit_code == 0
-  assert pw.__version__ in result.output.strip()
+router: ädmin | multiple (...)"""),
+    # querying for path and user
+    (["goggle"], 0, """
+goggles: alice@gogglemail.com
+   https://mail.goggles.com/
+   second line
+goggles: bob+spam@gogglemail.com
+  """),
+    (["bob@"], 0, """
+goggles: bob+spam@gogglemail.com
+laptop: bob
+  """),
+    (["bob@goggle"], 0, "goggles: bob+spam@gogglemail.com"),
+    (["goggle", "bob"], 0, "goggles: bob+spam@gogglemail.com"),
+    (["bob@goggle", "bob"], 0, ""),
+    # strictness
+    (["--strict", "myphone"], 0, "phones.myphone"),
+    (["--strict", "phones"], 2,
+     "error: multiple or no records found (but using --strict mode)"),
+    # raw
+    (["--raw", "myphone"], 0, "0000"),
+    (["--strict", "--raw", "myphone"], 0, "0000"),
+    (["--raw", "phones"], 0, "0000\n111"),
+    (["--strict", "--raw", "phones"], 2,
+     "error: multiple or no records found (but using --strict mode)"),
+])
+def test_basic(runner, args, exit_code, output_expected):
+    result = runner("--no-copy", "--no-echo", *args)
+    assert result.exit_code == exit_code
+    assert result.output.strip() == output_expected.strip()
 
 
 def test_missing():
-  result = invoke_cli(db_path='MISSING')
-  assert isinstance(result.exception, SystemExit) and result.exit_code != 0
-  assert "not found" in result.output
+    runner = CliRunner()
+    result = runner.invoke(pw.__main__.pw, ('--file', 'MISSING'))
+    assert result.exit_code == 1
+    assert "error: password store not found at 'MISSING'" == result.output.strip(
+    )
 
 
-def test_search():
-  # search for key
-  expected = """
-goggles: alice@gogglemail.com | https://mail.goggles.com/
-goggles: bob+spam@gogglemail.com
-"""
-  result = invoke_cli('--no-copy', '--no-echo', 'goggle')
-  assert not result.exception and result.exit_code == 0
-  assert result.output.strip() == expected.strip()
-
-  # search for user
-  expected = """
-goggles: bob+spam@gogglemail.com
-laptop: bob
-"""
-  result = invoke_cli('--no-copy', '--no-echo', 'bob@')
-  assert not result.exception and result.exit_code == 0
-  assert result.output.strip() == expected.strip()
-
-  # search for both user and key
-  expected = "goggles: bob+spam@gogglemail.com"
-  result = invoke_cli('--no-copy', '--no-echo', 'bob@goggle')
-  assert not result.exception and result.exit_code == 0
-  assert result.output.strip() == expected.strip()
+CLIPBOARD_NOT_TOUCHED = 'CLIPBOARD_NOT_TOUCHED'
 
 
-def test_echo_vs_copy():
-  # no copy nor echo
-  expected = "phones.myphone"
-  xerox.copy('')
-  result = invoke_cli('--no-copy', '--no-echo', 'myphone')
-  assert not result.exception and result.exit_code == 0
-  assert result.output.strip() == expected.strip()
-  assert xerox.paste() == ''
-
-  # only echo
-  expected = "phones.myphone | 0000"
-  xerox.copy('')
-  result = invoke_cli('--no-copy', '--echo', 'myphone')
-  assert not result.exception and result.exit_code == 0
-  assert result.output.strip() == expected.strip()
-  assert xerox.paste() == ''
-
-  # only echo
-  expected = "phones.myphone | *** PASSWORD COPIED TO CLIPBOARD ***"
-  xerox.copy('')
-  result = invoke_cli('--copy', '--no-echo', 'myphone')
-  assert not result.exception and result.exit_code == 0
-  assert result.output.strip() == expected.strip()
-  assert xerox.paste() == '0000'
-
-  # both copy and echo
-  expected = "phones.myphone | 0000 | *** PASSWORD COPIED TO CLIPBOARD ***"
-  xerox.copy('')
-  result = invoke_cli('--copy', '--echo', 'myphone')
-  assert not result.exception and result.exit_code == 0
-  assert result.output.strip() == expected.strip()
-  assert xerox.paste() == '0000'
-
-
-def test_strict():
-  # single result
-  expected = "phones.myphone"
-  result = invoke_cli('--no-copy', '--no-echo', '--strict', 'myphone')
-  assert not result.exception and result.exit_code == 0
-  assert result.output.strip() == expected.strip()
-
-  # multiple results (expect failure)
-  result = invoke_cli('--no-copy', '--no-echo', '--strict', 'phones')
-  assert isinstance(result.exception, SystemExit) and result.exit_code != 0
-
-
-def test_raw():
-  # single result
-  expected = "0000"
-  result = invoke_cli('--no-copy', '--no-echo', '--raw', 'myphone')
-  assert not result.exception and result.exit_code == 0
-  assert result.output.strip() == expected.strip()
-
-  # single result and strict
-  expected = "0000"
-  result = invoke_cli('--no-copy', '--no-echo', '--raw', '--strict', 'myphone')
-  assert not result.exception and result.exit_code == 0
-  assert result.output.strip() == expected.strip()
-
-  # multiple results
-  expected = {"0000", "111"}
-  result = invoke_cli('--no-copy', '--no-echo', '--raw', 'phones')
-  assert not result.exception and result.exit_code == 0
-  assert {line.strip() for line in result.output.splitlines()} == expected
-
-  # multiple results and strict (expect failure)
-  result = invoke_cli('--no-copy', '--no-echo', '--raw', '--strict', 'phones')
-  assert isinstance(result.exception, SystemExit) and result.exit_code != 0
-
-
-def test_gpg():
-  expected = "pin | *** PASSWORD COPIED TO CLIPBOARD ***"
-
-  # ASCII armor
-  result = invoke_cli(db_path='db.yaml.asc')
-  assert not result.exception and result.exit_code == 0
-  assert result.output.strip() == expected.strip()
-
-  # binary
-  result = invoke_cli(db_path='db.yaml.gpg')
-  assert not result.exception and result.exit_code == 0
-  assert result.output.strip() == expected.strip()
+@pytest.mark.parametrize(
+    "args, exit_code, output_expected, clipboard_expected", [
+        (["--no-copy", "--no-echo", "myphone"], 0, "phones.myphone",
+         CLIPBOARD_NOT_TOUCHED),
+        (["--no-copy", "--echo", "myphone"], 0, "phones.myphone | 0000",
+         CLIPBOARD_NOT_TOUCHED),
+        (["--copy", "--no-echo", "myphone"], 0,
+         "phones.myphone | *** PASSWORD COPIED TO CLIPBOARD ***", "0000"),
+        (["--copy", "--echo", "myphone"], 0,
+         "phones.myphone | 0000 | *** PASSWORD COPIED TO CLIPBOARD ***",
+         "0000"),
+    ]
+)
+def test_echo_vs_copy(runner, args, exit_code, output_expected,
+                      clipboard_expected):
+    xerox.copy(CLIPBOARD_NOT_TOUCHED)
+    result = runner(*args)
+    assert result.exit_code == exit_code
+    assert result.output.strip() == output_expected.strip()
+    assert xerox.paste() == clipboard_expected.strip()
