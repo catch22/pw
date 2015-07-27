@@ -55,7 +55,7 @@ class Store:
 class SyntaxError(Exception):
     def __init__(self, lineno, line, reason):
         super(SyntaxError, self).__init__('line %s: %s (%r)' %
-                                          (lineno, reason, line))
+                                          (lineno + 1, reason, line))
 
 
 EXPECT_ENTRY = 'expecting entry'
@@ -92,17 +92,26 @@ def _parse_entries(src):
         lexer.whitespace_split = True
 
         # otherwise, parse as an entry
-        key = lexer.get_token()
+        try:
+            key = lexer.get_token()
+        except ValueError, e:
+            raise SyntaxError(lineno, line, str(e))
         if not key:
             raise SyntaxError(lineno, line, state)
         key = key.rstrip(':')
 
-        user = lexer.get_token()
+        try:
+            user = lexer.get_token()
+        except ValueError, e:
+            raise SyntaxError(lineno, line, str(e))
         if not user:
             raise SyntaxError(lineno, line, state)
         user = user
 
-        password = lexer.get_token()
+        try:
+            password = lexer.get_token()
+        except ValueError, e:
+            raise SyntaxError(lineno, line, str(e))
         if not password:
             password = user
             user = notes = ''
