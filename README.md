@@ -14,7 +14,7 @@ Options:
   --raw / --no-raw            output password only
   -f, --file PATH             password file
   --edit                      launch editor to edit password database
-  -v, --version               print version information and exit
+  --version                   Show the version and exit.
   --help                      Show this message and exit.
 ```
 

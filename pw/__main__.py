@@ -31,9 +31,12 @@ def launch_editor(ctx, param, value):
                    file=sys.stderr)
         ctx.exit(1)
 
-    # load database
-    original = Store._load_source(file)
+    # load source (decrypting if necessary)
     is_encrypted = _gpg.is_encrypted(file)
+    if is_encrypted:
+        original = _gpg.decrypt(file)
+    else:
+        original = open(file, 'rb').read()
 
     # if encrypted, determine recipient
     if is_encrypted:
@@ -50,17 +53,17 @@ def launch_editor(ctx, param, value):
                           extension='.yaml')
     if modified is None:
         click.echo("not modified")
-        ctx.exit(0)
+        ctx.exit()
     modified = modified.encode('utf-8')
 
     # not encrypted? simply overwrite file
     if not is_encrypted:
         open(file, 'wb').write(modified)
-        ctx.exit(0)
+        ctx.exit()
 
     # otherwise, the process is somewhat more complicated
     _gpg.encrypt(recipient=recipient, dest_path=file, content=modified)
-    ctx.exit(0)
+    ctx.exit()
 
 
 @click.command()
@@ -85,7 +88,6 @@ def launch_editor(ctx, param, value):
               callback=launch_editor,
               help='launch editor to edit password database')
 @click.version_option(version=__version__,
-                      prog_name='pw',
                       message='%(prog)s version %(version)s')
 @click.pass_context
 def pw(ctx, key_pattern, user_pattern, file, copy, echo, strict, raw):
@@ -119,9 +121,6 @@ def pw(ctx, key_pattern, user_pattern, file, copy, echo, strict, raw):
             'error: multiple or no records found (but using --strict mode)',
             file=sys.stderr)
         ctx.exit(2)
-
-    # sort results according to key (stability of sorted() ensures that the order of accounts for any given key remains untouched)
-    results = sorted(results, key=lambda e: e.key)
 
     # raw mode?
     if raw:
@@ -169,4 +168,4 @@ def pw(ctx, key_pattern, user_pattern, file, copy, echo, strict, raw):
 
 
 if __name__ == '__main__':
-    pw()
+    pw(prog_name='pw')

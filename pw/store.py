@@ -18,24 +18,35 @@ class Store:
     """Password store."""
 
     def __init__(self, path, entries):
-        self.path = path
+        # normalize keys
         self.entries = [e._replace(key=normalized_key(e.key)) for e in entries]
+        self.path = path
 
     def search(self, key_pattern, user_pattern):
         """Search database for given key and user pattern."""
+        # normalize key
         key_pattern = normalized_key(key_pattern)
+
+        # search
+        results = []
         for entry in self.entries:
             if key_pattern in entry.key and user_pattern in entry.user:
-                yield entry
+                results.append(entry)
+
+        # sort results according to key (stability of sorted() ensures that the order of accounts for any given key remains untouched)
+        return sorted(results, key=lambda e: e.key)
 
     @staticmethod
     def load(path):
         """Load password store from file."""
-        # load source
-        src = Store._load_source(path)
-        ext = _gpg.unencrypted_ext(path)
+        # load source (decrypting if necessary)
+        if _gpg.is_encrypted(path):
+            src = _gpg.decrypt(path)
+        else:
+            src = open(path, 'rb').read()
 
         # parse database source
+        ext = _gpg.unencrypted_ext(path)
         if ext in ['.yml', '.yaml']:
             from . import _yaml
             entries = _yaml.parse_entries(src)
@@ -43,13 +54,6 @@ class Store:
             entries = _parse_entries(src)
 
         return Store(path, entries)
-
-    @staticmethod
-    def _load_source(path):
-        """Load database source (decrypting if necessary)."""
-        if _gpg.is_encrypted(path):
-            return _gpg.decrypt(path)
-        return open(path, 'rb').read()
 
 
 class SyntaxError(Exception):
