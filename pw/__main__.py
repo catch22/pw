@@ -13,15 +13,7 @@ def default_path():
     return os.environ.get('PW_PATH') or click.get_app_dir('passwords.pw')
 
 
-def print_version(ctx, param, value):
-    """print version information and exit"""
-    if not value or ctx.resilient_parsing:
-        return
-    click.echo('pw version %s' % __version__)
-    ctx.exit()
-
-
-def edit_database(ctx, param, value):
+def launch_editor(ctx, param, value):
     """edit password database and exit"""
     if not value or ctx.resilient_parsing:
         return
@@ -30,14 +22,14 @@ def edit_database(ctx, param, value):
     editor = os.environ.get('PW_EDITOR')
     if not editor:
         click.echo('error: no editor set in PW_EDITOR environment variables')
-        sys.exit(1)
+        ctx.exit(1)
 
     # verify that database file is present
     file = ctx.params.get('file', default_path())
     if not os.path.exists(file):
         click.echo("error: password store not found at '%s'" % file,
                    file=sys.stderr)
-        sys.exit(1)
+        ctx.exit(1)
 
     # load database
     original = Store._load_source(file)
@@ -49,7 +41,7 @@ def edit_database(ctx, param, value):
         if not recipient:
             click.echo(
                 'error: no recipient set in PW_GPG_RECIPIENT environment variables')
-            sys.exit(1)
+            ctx.exit(1)
 
     # launch the editor
     modified = click.edit(original.decode('utf-8'),
@@ -58,17 +50,17 @@ def edit_database(ctx, param, value):
                           extension='.yaml')
     if modified is None:
         click.echo("not modified")
-        sys.exit(0)
+        ctx.exit(0)
     modified = modified.encode('utf-8')
 
     # not encrypted? simply overwrite file
     if not is_encrypted:
         open(file, 'wb').write(modified)
-        sys.exit(0)
+        ctx.exit(0)
 
     # otherwise, the process is somewhat more complicated
     _gpg.encrypt(recipient=recipient, dest_path=file, content=modified)
-    sys.exit(0)
+    ctx.exit(0)
 
 
 @click.command()
@@ -90,21 +82,19 @@ def edit_database(ctx, param, value):
               is_flag=True,
               expose_value=False,
               is_eager=True,
-              callback=edit_database,
+              callback=launch_editor,
               help='launch editor to edit password database')
-@click.option('--version', '-v',
-              is_flag=True,
-              expose_value=False,
-              is_eager=True,
-              callback=print_version,
-              help='print version information and exit')
-def pw(key_pattern, user_pattern, file, copy, echo, strict, raw):
+@click.version_option(version=__version__,
+                      prog_name='pw',
+                      message='%(prog)s version %(version)s')
+@click.pass_context
+def pw(ctx, key_pattern, user_pattern, file, copy, echo, strict, raw):
     """Search for USER and KEY in GPG-encrypted password file."""
 
     # install silent Ctrl-C handler
     def handle_sigint(*_):
         click.echo()
-        sys.exit(1)
+        ctx.exit(1)
 
     signal.signal(signal.SIGINT, handle_sigint)
 
@@ -112,7 +102,7 @@ def pw(key_pattern, user_pattern, file, copy, echo, strict, raw):
     if not os.path.exists(file):
         click.echo("error: password store not found at '%s'" % file,
                    file=sys.stderr)
-        sys.exit(1)
+        ctx.exit(1)
 
     # load database
     store = Store.load(file)
@@ -128,7 +118,7 @@ def pw(key_pattern, user_pattern, file, copy, echo, strict, raw):
         click.echo(
             'error: multiple or no records found (but using --strict mode)',
             file=sys.stderr)
-        sys.exit(2)
+        ctx.exit(2)
 
     # sort results according to key (stability of sorted() ensures that the order of accounts for any given key remains untouched)
     results = sorted(results, key=lambda e: e.key)
