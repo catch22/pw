@@ -98,7 +98,7 @@ def _parse_entries(src):
         # otherwise, parse as an entry
         try:
             key = lexer.get_token()
-        except ValueError, e:
+        except ValueError as e:
             raise SyntaxError(lineno, line, str(e))
         if not key:
             raise SyntaxError(lineno, line, state)
@@ -106,7 +106,7 @@ def _parse_entries(src):
 
         try:
             user = lexer.get_token()
-        except ValueError, e:
+        except ValueError as e:
             raise SyntaxError(lineno, line, str(e))
         if not user:
             raise SyntaxError(lineno, line, state)
@@ -114,7 +114,7 @@ def _parse_entries(src):
 
         try:
             password = lexer.get_token()
-        except ValueError, e:
+        except ValueError as e:
             raise SyntaxError(lineno, line, str(e))
         if not password:
             password = user
