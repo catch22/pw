@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)
 from functools import partial
 import os, os.path, pipes, signal, subprocess, sys, tempfile, time
 import click
