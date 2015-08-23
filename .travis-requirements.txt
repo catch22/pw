@@ -1,7 +1,7 @@
-# python 3 fix is not yet on pypi
 click
 colorama
 ushlex
-git+https://github.com/kennethreitz/xerox.git#egg=xerox
+# python 3 + unicode fixes
+git+https://github.com/catch22/xerox.git#egg=xerox
 pytest
 PyYAML

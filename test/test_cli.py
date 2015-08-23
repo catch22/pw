@@ -1,6 +1,5 @@
 # coding: utf-8
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals)
+from __future__ import absolute_import, division, print_function
 from functools import partial
 from click.testing import CliRunner
 import os.path
@@ -27,7 +26,7 @@ def runner(request):
     # version
     (["--version"], 0, "pw version " + pw.__version__),
     # default options (requires xerox)
-    ([], 0, """
+    ([], 0, u"""
 goggles: alice@gogglemail.com
    https://mail.goggles.com/
    second line
@@ -76,7 +75,7 @@ def test_missing():
     )
 
 
-CLIPBOARD_NOT_TOUCHED = 'CLIPBOARD_NOT_TOUCHED'
+CLIPBOARD_NOT_TOUCHED = u'CLIPBOARD_NOT_TOUCHED'
 
 
 @pytest.mark.parametrize(
@@ -87,11 +86,10 @@ CLIPBOARD_NOT_TOUCHED = 'CLIPBOARD_NOT_TOUCHED'
          CLIPBOARD_NOT_TOUCHED),
         (["--copy", "--no-echo", "myphone"], 0,
          "phones.myphone | *** PASSWORD COPIED TO CLIPBOARD ***", "0000"),
-        (["--copy", "--echo", "myphone"], 0,
-         "phones.myphone | 0000 | *** PASSWORD COPIED TO CLIPBOARD ***",
+        (["--copy", "--echo", "myphone"
+          ], 0, "phones.myphone | 0000 | *** PASSWORD COPIED TO CLIPBOARD ***",
          "0000"),
-    ]
-)
+    ])
 def test_echo_vs_copy(runner, args, exit_code, output_expected,
                       clipboard_expected):
     xerox.copy(CLIPBOARD_NOT_TOUCHED)

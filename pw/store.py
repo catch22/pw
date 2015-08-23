@@ -1,5 +1,4 @@
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals)
+from __future__ import absolute_import, division, print_function
 import os.path, sys
 from collections import namedtuple
 from io import StringIO
@@ -60,8 +59,8 @@ class Store:
 
 class SyntaxError(Exception):
     def __init__(self, lineno, line, reason):
-        super(SyntaxError, self).__init__('line %s: %s (%r)' %
-                                          (lineno + 1, reason, line))
+        super(SyntaxError, self).__init__(
+            'line %s: %s (%r)' % (lineno + 1, reason, line))
 
 
 EXPECT_ENTRY = 'expecting entry'
