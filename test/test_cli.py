@@ -62,7 +62,7 @@ laptop: bob
      "error: multiple or no records found (but using --strict mode)"),
 ])
 def test_basic(runner, args, exit_code, output_expected):
-    result = runner("--no-copy", "--no-echo", *args)
+    result = runner("--no-passwords", *args)
     assert result.exit_code == exit_code
     assert result.output.strip() == output_expected.strip()
 
@@ -80,18 +80,17 @@ CLIPBOARD_NOT_TOUCHED = u'CLIPBOARD_NOT_TOUCHED'
 
 @pytest.mark.parametrize(
     "args, exit_code, output_expected, clipboard_expected", [
-        (["--no-copy", "--no-echo", "myphone"], 0, "phones.myphone",
-         CLIPBOARD_NOT_TOUCHED),
-        (["--no-copy", "--echo", "myphone"], 0, "phones.myphone | 0000",
-         CLIPBOARD_NOT_TOUCHED),
-        (["--copy", "--no-echo", "myphone"], 0,
+        (["myphone"], 0,
          "phones.myphone | *** PASSWORD COPIED TO CLIPBOARD ***", "0000"),
-        (["--copy", "--echo", "myphone"
-          ], 0, "phones.myphone | 0000 | *** PASSWORD COPIED TO CLIPBOARD ***",
-         "0000"),
+        (["--copy", "myphone"], 0,
+         "phones.myphone | *** PASSWORD COPIED TO CLIPBOARD ***", "0000"),
+        (["--echo", "myphone"], 0, "phones.myphone | 0000",
+         CLIPBOARD_NOT_TOUCHED),
+        (["--raw", "myphone"], 0, "0000", CLIPBOARD_NOT_TOUCHED),
+        (["--no-passwords", "myphone"], 0, "phones.myphone",
+         CLIPBOARD_NOT_TOUCHED),
     ])
-def test_echo_vs_copy(runner, args, exit_code, output_expected,
-                      clipboard_expected):
+def test_modes(runner, args, exit_code, output_expected, clipboard_expected):
     xerox.copy(CLIPBOARD_NOT_TOUCHED)
     result = runner(*args)
     assert result.exit_code == exit_code

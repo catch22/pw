@@ -5,17 +5,19 @@
 ```
 Usage: pw [OPTIONS] [USER@][KEY] [USER]
 
-  Search for USER and KEY in GPG-encrypted password file.
+  Search for USER and KEY in GPG-encrypted
+  password file.
 
 Options:
-  --copy / --no-copy          copy password to clipboard (default)
-  -E, --echo / --no-echo      print password to console
-  -S, --strict / --no-strict  fail unless precisely a single result has been found
-  --raw / --no-raw            output password only
-  -f, --file PATH             password file
-  --edit                      launch editor to edit password database
-  --version                   Show the version and exit.
-  --help                      Show this message and exit.
+  -C, --copy              copy password to clipboard (default)
+  -E, --echo              print password to console
+  -R, --raw               output password only
+  -N, --no-passwords      display account information only
+  --strict / --no-strict  fail unless precisely a single result has been found
+  -f, --file PATH         password file
+  --edit                  launch editor to edit password database
+  --version               Show the version and exit.
+  --help                  Show this message and exit.
 ```
 
 

@@ -10,6 +10,13 @@ style_error = style_password = partial(click.style, fg='red', bold=True)
 style_success = partial(click.style, fg='green', bold=True, reverse=True)
 
 
+class Mode(object):
+    COPY = 'Mode.COPY'
+    ECHO = 'Mode.ECHO'
+    RAW = 'Mode.RAW'
+    NO_PASSWORDS = 'Mode.NO_PASSWORDS'
+
+
 def default_path():
     return os.environ.get('PW_PATH') or click.get_app_dir('passwords.pw')
 
@@ -70,13 +77,21 @@ def launch_editor(ctx, param, value):
 @click.command()
 @click.argument('key_pattern', metavar='[USER@][KEY]', default='')
 @click.argument('user_pattern', metavar='[USER]', default='')
-@click.option('--copy/--no-copy',
+@click.option('--copy', '-C', 'mode',
+              flag_value=Mode.COPY,
               default=True,
               help='copy password to clipboard (default)')
-@click.option('--echo/--no-echo', '-E', help='print password to console')
-@click.option('--strict/--no-strict', '-S',
+@click.option('--echo', '-E', 'mode',
+              flag_value=Mode.ECHO,
+              help='print password to console')
+@click.option('--raw', '-R', 'mode',
+              flag_value=Mode.RAW,
+              help='output password only')
+@click.option('--no-passwords', '-N', 'mode',
+              flag_value=Mode.NO_PASSWORDS,
+              help='display account information only')
+@click.option('--strict/--no-strict',
               help='fail unless precisely a single result has been found')
-@click.option('--raw/--no-raw', help='output password only')
 @click.option('--file', '-f',
               metavar='PATH',
               is_eager=True,
@@ -91,7 +106,7 @@ def launch_editor(ctx, param, value):
 @click.version_option(version=__version__,
                       message='%(prog)s version %(version)s')
 @click.pass_context
-def pw(ctx, key_pattern, user_pattern, file, copy, echo, strict, raw):
+def pw(ctx, key_pattern, user_pattern, file, mode, strict):
     """Search for USER and KEY in GPG-encrypted password file."""
 
     # install silent Ctrl-C handler
@@ -124,7 +139,7 @@ def pw(ctx, key_pattern, user_pattern, file, copy, echo, strict, raw):
         ctx.exit(2)
 
     # raw mode?
-    if raw:
+    if mode == Mode.RAW:
         for entry in results:
             click.echo(entry.password)
         return
@@ -142,9 +157,9 @@ def pw(ctx, key_pattern, user_pattern, file, copy, echo, strict, raw):
             output += ': ' + user
 
         # password
-        if echo:
+        if mode == Mode.ECHO:
             output += ' | ' + style_password(entry.password)
-        if copy and idx == 0:
+        elif mode == Mode.COPY and idx == 0:
             try:
                 import xerox
                 xerox.copy(entry.password)
