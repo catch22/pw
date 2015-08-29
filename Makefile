@@ -3,6 +3,9 @@
 test:
 	cd test && python -m pytest
 
+test-pw:
+	PYTHONPATH=. python -m pw --file test/db.pw ${ARGS}
+
 upload-release:
 	python -c "import wheel, pypandoc"  # check upload dependencies
 	python -c "import subprocess; assert not subprocess.check_output('python setup.py --version', shell=True).strip().endswith('-dev'), 'trying to upload -dev release'"

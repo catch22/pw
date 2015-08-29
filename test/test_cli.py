@@ -17,15 +17,17 @@ def runner(request):
 
     # instantiate runner and provide database path
     runner = CliRunner()
-    return (
-        lambda *args: runner.invoke(pw.__main__.pw, ('--file', request.param, ) + args)
-    )
+    return lambda *args: runner.invoke(pw.__main__.pw, ('--file', request.param) + args)
+
+
+def test_version(runner):
+    result = runner("--version")
+    assert result.exit_code == 0
+    assert result.output.strip().startswith("pw version ")
 
 
 @pytest.mark.parametrize("args, exit_code, output_expected", [
-    # version
-    (["--version"], 0, "pw version " + pw.__version__),
-    # default options
+    # default query
     ([], 0, u"""
 goggles: alice@gogglemail.com
    https://mail.goggles.com/
@@ -53,16 +55,10 @@ laptop: bob
     # strictness
     (["--strict", "myphone"], 0, "phones.myphone"),
     (["--strict", "phones"], 2,
-     "error: multiple or no records found (but using --strict mode)"),
-    # raw
-    (["--raw", "myphone"], 0, "0000"),
-    (["--strict", "--raw", "myphone"], 0, "0000"),
-    (["--raw", "phones"], 0, "0000\n111"),
-    (["--strict", "--raw", "phones"], 2,
-     "error: multiple or no records found (but using --strict mode)"),
+     "error: multiple or no records found (but using --strict flag)"),
 ])
-def test_basic(runner, args, exit_code, output_expected):
-    result = runner("--no-passwords", *args)
+def test_query(runner, args, exit_code, output_expected):
+    result = runner("--echo", "--user", *args)
     assert result.exit_code == exit_code
     assert result.output.strip() == output_expected.strip()
 
@@ -80,15 +76,19 @@ CLIPBOARD_NOT_TOUCHED = u'CLIPBOARD_NOT_TOUCHED'
 
 @pytest.mark.parametrize(
     "args, exit_code, output_expected, clipboard_expected", [
-        (["myphone"], 0,
-         "phones.myphone | *** PASSWORD COPIED TO CLIPBOARD ***", "0000"),
-        (["--copy", "myphone"], 0,
-         "phones.myphone | *** PASSWORD COPIED TO CLIPBOARD ***", "0000"),
-        (["--echo", "myphone"], 0, "phones.myphone | 0000",
+        (["laptop", "bob"], 0,
+         "laptop: bob | *** PASSWORD COPIED TO CLIPBOARD ***", "b0b"),
+        (["--copy", "laptop", "bob"], 0,
+         "laptop: bob | *** PASSWORD COPIED TO CLIPBOARD ***", "b0b"),
+        (["--copy", "--user", "laptop", "bob"], 0,
+         "laptop: bob | *** USERNAME COPIED TO CLIPBOARD ***", "bob"),
+        (["--echo", "laptop", "bob"], 0, "laptop: bob | b0b",
          CLIPBOARD_NOT_TOUCHED),
-        (["--raw", "myphone"], 0, "0000", CLIPBOARD_NOT_TOUCHED),
-        (["--no-passwords", "myphone"], 0, "phones.myphone",
+        (["--echo", "--user", "laptop", "bob"], 0, "laptop: bob",
          CLIPBOARD_NOT_TOUCHED),
+        (["--raw", "laptop", "bob"], 0, "b0b", CLIPBOARD_NOT_TOUCHED),
+        (["--raw", "--user", "laptop", "bob"], 0, "bob", CLIPBOARD_NOT_TOUCHED
+         ),
     ])
 def test_modes(runner, args, exit_code, output_expected, clipboard_expected):
     pyperclip.copy(CLIPBOARD_NOT_TOUCHED)
