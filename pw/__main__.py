@@ -14,7 +14,6 @@ class Mode(object):
     COPY = 'Mode.COPY'
     ECHO = 'Mode.ECHO'
     RAW = 'Mode.RAW'
-    NO_PASSWORDS = 'Mode.NO_PASSWORDS'
 
 
 def default_path():
@@ -35,8 +34,7 @@ def launch_editor(ctx, param, value):
     # verify that database file is present
     file = ctx.params.get('file', default_path())
     if not os.path.exists(file):
-        click.echo("error: password store not found at '%s'" % file,
-                   file=sys.stderr)
+        click.echo("error: password store not found at '%s'" % file, err=True)
         ctx.exit(1)
 
     # load source (decrypting if necessary)
@@ -77,22 +75,34 @@ def launch_editor(ctx, param, value):
 @click.command()
 @click.argument('key_pattern', metavar='[USER@][KEY]', default='')
 @click.argument('user_pattern', metavar='[USER]', default='')
-@click.option('--copy', '-C', 'mode',
+@click.option('--copy',
+              '-C',
+              'mode',
               flag_value=Mode.COPY,
               default=True,
               help='copy password to clipboard (default)')
-@click.option('--echo', '-E', 'mode',
+@click.option('--echo',
+              '-E',
+              'mode',
               flag_value=Mode.ECHO,
               help='print password to console')
-@click.option('--raw', '-R', 'mode',
+@click.option('--raw',
+              '-R',
+              'mode',
               flag_value=Mode.RAW,
               help='output password only')
-@click.option('--no-passwords', '-N', 'mode',
-              flag_value=Mode.NO_PASSWORDS,
-              help='display account information only')
-@click.option('--strict/--no-strict',
+@click.option('--strict',
+              '-S',
+              'strict_flag',
+              is_flag=True,
               help='fail unless precisely a single result has been found')
-@click.option('--file', '-f',
+@click.option('--user',
+              '-U',
+              'user_flag',
+              is_flag=True,
+              help="copy or display username instead of password")
+@click.option('--file',
+              '-f',
               metavar='PATH',
               is_eager=True,
               default=default_path(),
@@ -106,7 +116,7 @@ def launch_editor(ctx, param, value):
 @click.version_option(version=__version__,
                       message='%(prog)s version %(version)s')
 @click.pass_context
-def pw(ctx, key_pattern, user_pattern, file, mode, strict):
+def pw(ctx, key_pattern, user_pattern, mode, strict_flag, user_flag, file):
     """Search for USER and KEY in GPG-encrypted password file."""
 
     # install silent Ctrl-C handler
@@ -118,8 +128,7 @@ def pw(ctx, key_pattern, user_pattern, file, mode, strict):
 
     # verify that database file is present
     if not os.path.exists(file):
-        click.echo("error: password store not found at '%s'" % file,
-                   file=sys.stderr)
+        click.echo("error: password store not found at '%s'" % file, err=True)
         ctx.exit(1)
 
     # load database
@@ -132,16 +141,18 @@ def pw(ctx, key_pattern, user_pattern, file, mode, strict):
     # search database
     results = store.search(key_pattern, user_pattern)
     results = list(results)
-    if strict and len(results) != 1:
+
+    # if strict flag is enabled, check that precisely a single record was found
+    if strict_flag and len(results) != 1:
         click.echo(
-            'error: multiple or no records found (but using --strict mode)',
-            file=sys.stderr)
+            'error: multiple or no records found (but using --strict flag)',
+            err=True)
         ctx.exit(2)
 
     # raw mode?
     if mode == Mode.RAW:
         for entry in results:
-            click.echo(entry.password)
+            click.echo(entry.user if user_flag else entry.password)
         return
 
     # print results
@@ -157,13 +168,14 @@ def pw(ctx, key_pattern, user_pattern, file, mode, strict):
             output += ': ' + user
 
         # password
-        if mode == Mode.ECHO:
+        if mode == Mode.ECHO and not user_flag:
             output += ' | ' + style_password(entry.password)
         elif mode == Mode.COPY and idx == 0:
             try:
                 import pyperclip
-                pyperclip.copy(entry.password)
-                result = style_success('*** PASSWORD COPIED TO CLIPBOARD ***')
+                pyperclip.copy(entry.user if user_flag else entry.password)
+                result = style_success('*** %s COPIED TO CLIPBOARD ***' % (
+                    "USERNAME" if user_flag else "PASSWORD"))
             except ImportError:
                 result = style_error(
                     '*** PYTHON PACKAGE "PYPERCLIP" NOT FOUND ***')
