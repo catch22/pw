@@ -42,5 +42,5 @@ setup(
         'License :: OSI Approved :: MIT License',
     ],
     long_description=long_description,
-    install_requires=['click>=5.1', 'colorama', 'xerox', 'ushlex'],
+    install_requires=['click>=5.1', 'colorama', 'pyperclip>=1.5.11', 'ushlex'],
     tests_require=['pytest', 'PyYAML'])

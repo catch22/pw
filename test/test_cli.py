@@ -5,7 +5,7 @@ from click.testing import CliRunner
 import os.path
 import pytest
 import pw, pw.__main__
-import xerox
+import pyperclip
 
 
 @pytest.fixture(scope='module',
@@ -25,7 +25,7 @@ def runner(request):
 @pytest.mark.parametrize("args, exit_code, output_expected", [
     # version
     (["--version"], 0, "pw version " + pw.__version__),
-    # default options (requires xerox)
+    # default options
     ([], 0, u"""
 goggles: alice@gogglemail.com
    https://mail.goggles.com/
@@ -91,11 +91,8 @@ CLIPBOARD_NOT_TOUCHED = u'CLIPBOARD_NOT_TOUCHED'
          CLIPBOARD_NOT_TOUCHED),
     ])
 def test_modes(runner, args, exit_code, output_expected, clipboard_expected):
-    xerox.copy(CLIPBOARD_NOT_TOUCHED)
+    pyperclip.copy(CLIPBOARD_NOT_TOUCHED)
     result = runner(*args)
     assert result.exit_code == exit_code
     assert result.output.strip() == output_expected.strip()
-    clipboard = xerox.paste()
-    if isinstance(clipboard, bytes):
-        clipboard = clipboard.decode('utf-8')
-    assert clipboard == clipboard_expected.strip()
+    assert pyperclip.paste() == clipboard_expected.strip()

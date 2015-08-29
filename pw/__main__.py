@@ -161,11 +161,12 @@ def pw(ctx, key_pattern, user_pattern, file, mode, strict):
             output += ' | ' + style_password(entry.password)
         elif mode == Mode.COPY and idx == 0:
             try:
-                import xerox
-                xerox.copy(entry.password)
+                import pyperclip
+                pyperclip.copy(entry.password)
                 result = style_success('*** PASSWORD COPIED TO CLIPBOARD ***')
             except ImportError:
-                result = style_error('*** PYTHON XEROX PACKAGE NOT FOUND ***')
+                result = style_error(
+                    '*** PYTHON PACKAGE "PYPERCLIP" NOT FOUND ***')
             output += ' | ' + result
 
         # other info

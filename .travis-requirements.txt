@@ -1,7 +1,6 @@
 click
 colorama
 ushlex
-# python 3 + unicode fixes
-git+https://github.com/catch22/xerox.git#egg=xerox
+pyperclip
 pytest
 PyYAML
