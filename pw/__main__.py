@@ -33,40 +33,40 @@ def highlight_match(pattern, str):
               'mode',
               flag_value=Mode.COPY,
               default=True,
-              help='copy password to clipboard (default)')
+              help='Copy password to clipboard (default).')
 @click.option('--echo',
               '-E',
               'mode',
               flag_value=Mode.ECHO,
-              help='print password to console')
+              help='Print password to console.')
 @click.option('--raw',
               '-R',
               'mode',
               flag_value=Mode.RAW,
-              help='output password only')
+              help='Output password only.')
 @click.option('--strict',
               '-S',
               'strict_flag',
               is_flag=True,
-              help='fail unless precisely a single result has been found')
+              help='Ensure that precisely a single result has been found.')
 @click.option('--user',
               '-U',
               'user_flag',
               is_flag=True,
-              help="copy or display username instead of password")
+              help="Copy or display username instead of password.")
 @click.option('--file',
               '-f',
               metavar='PATH',
               default=default_path(),
-              help='password file')
+              help='Path to password file.')
 @click.option('--edit',
               'edit_subcommand',
               is_flag=True,
-              help='launch editor to edit password database')
+              help='Launch editor to edit password database and exit.')
 @click.option('--gen',
               'gen_subcommand',
               is_flag=True,
-              help='generate a random password')
+              help='Generate a random password and exit.')
 @click.version_option(version=__version__,
                       message='%(prog)s version %(version)s')
 @click.pass_context
