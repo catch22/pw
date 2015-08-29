@@ -11,7 +11,7 @@ Options:
   -C, --copy       Copy password to clipboard (default).
   -E, --echo       Print password to console.
   -R, --raw        Output password only.
-  -S, --strict     Ensure that precisely a single result has been found.
+  -S, --strict     Fail unless precisely a single result has been found.
   -U, --user       Copy or display username instead of password.
   -f, --file PATH  Path to password file.
   --edit           Launch editor to edit password database and exit.

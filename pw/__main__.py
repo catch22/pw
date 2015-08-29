@@ -48,7 +48,7 @@ def highlight_match(pattern, str):
               '-S',
               'strict_flag',
               is_flag=True,
-              help='Ensure that precisely a single result has been found.')
+              help='Fail unless precisely a single result has been found.')
 @click.option('--user',
               '-U',
               'user_flag',
