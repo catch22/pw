@@ -8,9 +8,9 @@ Usage: pw [OPTIONS] [USER@][KEY] [USER]
   Search for USER and KEY in GPG-encrypted password file.
 
 Options:
-  -C, --copy       Copy password to clipboard (default).
-  -E, --echo       Print password to console.
-  -R, --raw        Output password only.
+  -C, --copy       Display account information, but copy password to clipboard (default mode).
+  -E, --echo       Display account information as well as password in plaintext (alternative mode).
+  -R, --raw        Only display password in plaintext (alternative mode).
   -S, --strict     Fail unless precisely a single result has been found.
   -U, --user       Copy or display username instead of password.
   -f, --file PATH  Path to password file.

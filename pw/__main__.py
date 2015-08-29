@@ -28,22 +28,28 @@ def highlight_match(pattern, str):
 @click.command()
 @click.argument('key_pattern', metavar='[USER@][KEY]', default='')
 @click.argument('user_pattern', metavar='[USER]', default='')
-@click.option('--copy',
-              '-C',
-              'mode',
-              flag_value=Mode.COPY,
-              default=True,
-              help='Copy password to clipboard (default).')
-@click.option('--echo',
-              '-E',
-              'mode',
-              flag_value=Mode.ECHO,
-              help='Print password to console.')
+@click.option(
+    '--copy',
+    '-C',
+    'mode',
+    flag_value=Mode.COPY,
+    default=True,
+    help=
+    'Display account information, but copy password to clipboard (default mode).'
+)
+@click.option(
+    '--echo',
+    '-E',
+    'mode',
+    flag_value=Mode.ECHO,
+    help=
+    'Display account information as well as password in plaintext (alternative mode).'
+)
 @click.option('--raw',
               '-R',
               'mode',
               flag_value=Mode.RAW,
-              help='Output password only.')
+              help='Only display password in plaintext (alternative mode).')
 @click.option('--strict',
               '-S',
               'strict_flag',
