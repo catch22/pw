@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 from __future__ import absolute_import, division, print_function
 from functools import partial
-import os, os.path, pipes, signal, subprocess, sys, tempfile, time
+import os, os.path, random, signal, string
 import click
 from . import __version__, Store, _gpg
 
@@ -18,58 +18,6 @@ class Mode(object):
 
 def default_path():
     return os.environ.get('PW_PATH') or click.get_app_dir('passwords.pw')
-
-
-def launch_editor(ctx, param, value):
-    """edit password database and exit"""
-    if not value or ctx.resilient_parsing:
-        return
-
-    # do not use EDITOR environment variable (rather force user to make a concious choice)
-    editor = os.environ.get('PW_EDITOR')
-    if not editor:
-        click.echo('error: no editor set in PW_EDITOR environment variables')
-        ctx.exit(1)
-
-    # verify that database file is present
-    file = ctx.params.get('file', default_path())
-    if not os.path.exists(file):
-        click.echo("error: password store not found at '%s'" % file, err=True)
-        ctx.exit(1)
-
-    # load source (decrypting if necessary)
-    is_encrypted = _gpg.is_encrypted(file)
-    if is_encrypted:
-        original = _gpg.decrypt(file)
-    else:
-        original = open(file, 'rb').read()
-
-    # if encrypted, determine recipient
-    if is_encrypted:
-        recipient = os.environ.get('PW_GPG_RECIPIENT')
-        if not recipient:
-            click.echo(
-                'error: no recipient set in PW_GPG_RECIPIENT environment variables')
-            ctx.exit(1)
-
-    # launch the editor
-    modified = click.edit(original.decode('utf-8'),
-                          editor=editor,
-                          require_save=True,
-                          extension='.yaml')
-    if modified is None:
-        click.echo("not modified")
-        ctx.exit()
-    modified = modified.encode('utf-8')
-
-    # not encrypted? simply overwrite file
-    if not is_encrypted:
-        open(file, 'wb').write(modified)
-        ctx.exit()
-
-    # otherwise, the process is somewhat more complicated
-    _gpg.encrypt(recipient=recipient, dest_path=file, content=modified)
-    ctx.exit()
 
 
 @click.command()
@@ -104,19 +52,21 @@ def launch_editor(ctx, param, value):
 @click.option('--file',
               '-f',
               metavar='PATH',
-              is_eager=True,
               default=default_path(),
               help='password file')
 @click.option('--edit',
+              'edit_subcommand',
               is_flag=True,
-              expose_value=False,
-              is_eager=True,
-              callback=launch_editor,
               help='launch editor to edit password database')
+@click.option('--gen',
+              'gen_subcommand',
+              is_flag=True,
+              help='generate a random password')
 @click.version_option(version=__version__,
                       message='%(prog)s version %(version)s')
 @click.pass_context
-def pw(ctx, key_pattern, user_pattern, mode, strict_flag, user_flag, file):
+def pw(ctx, key_pattern, user_pattern, mode, strict_flag, user_flag, file,
+       edit_subcommand, gen_subcommand):
     """Search for USER and KEY in GPG-encrypted password file."""
 
     # install silent Ctrl-C handler
@@ -125,6 +75,15 @@ def pw(ctx, key_pattern, user_pattern, mode, strict_flag, user_flag, file):
         ctx.exit(1)
 
     signal.signal(signal.SIGINT, handle_sigint)
+
+    # invoke a subcommand?
+    if gen_subcommand:
+        length = int(key_pattern) if key_pattern else None
+        generate_password(mode, length)
+        return
+    elif edit_subcommand:
+        launch_editor(ctx, file)
+        return
 
     # verify that database file is present
     if not os.path.exists(file):
@@ -194,6 +153,79 @@ def pw(ctx, key_pattern, user_pattern, mode, strict_flag, user_flag, file):
                     output += " (...)"
         output += '\n'
     click.echo(output.rstrip())
+
+
+def launch_editor(ctx, file):
+    """launch editor with decrypted password database"""
+    # do not use EDITOR environment variable (rather force user to make a concious choice)
+    editor = os.environ.get('PW_EDITOR')
+    if not editor:
+        click.echo('error: no editor set in PW_EDITOR environment variables')
+        ctx.exit(1)
+
+    # verify that database file is present
+    if not os.path.exists(file):
+        click.echo("error: password store not found at '%s'" % file, err=True)
+        ctx.exit(1)
+
+    # load source (decrypting if necessary)
+    is_encrypted = _gpg.is_encrypted(file)
+    if is_encrypted:
+        original = _gpg.decrypt(file)
+    else:
+        original = open(file, 'rb').read()
+
+    # if encrypted, determine recipient
+    if is_encrypted:
+        recipient = os.environ.get('PW_GPG_RECIPIENT')
+        if not recipient:
+            click.echo(
+                'error: no recipient set in PW_GPG_RECIPIENT environment variables')
+            ctx.exit(1)
+
+    # launch the editor
+    modified = click.edit(original.decode('utf-8'),
+                          editor=editor,
+                          require_save=True,
+                          extension='.yaml')
+    if modified is None:
+        click.echo("not modified")
+        return
+    modified = modified.encode('utf-8')
+
+    # not encrypted? simply overwrite file
+    if not is_encrypted:
+        open(file, 'wb').write(modified)
+        return
+
+    # otherwise, the process is somewhat more complicated
+    _gpg.encrypt(recipient=recipient, dest_path=file, content=modified)
+
+
+def generate_password(mode, length):
+    """generate a random password"""
+    RANDOM_ALPHABET = string.ascii_letters + string.digits
+    DEFAULT_LENGTH = 32
+
+    # generate random password
+    r = random.SystemRandom()
+    length = length or DEFAULT_LENGTH
+    password = ''.join(r.choice(RANDOM_ALPHABET) for _ in range(length))
+
+    # copy or echo generated password
+    if mode == Mode.ECHO:
+        click.echo(style_password(password))
+    elif mode == Mode.COPY:
+        try:
+            import pyperclip
+            pyperclip.copy(password)
+            result = style_success('*** PASSWORD COPIED TO CLIPBOARD ***')
+        except ImportError:
+            result = style_error(
+                '*** PYTHON PACKAGE "PYPERCLIP" NOT FOUND ***')
+        click.echo(result)
+    elif mode == Mode.RAW:
+        click.echo(password)
 
 
 if __name__ == '__main__':

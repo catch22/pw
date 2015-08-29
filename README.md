@@ -15,6 +15,7 @@ Options:
   -U, --user       copy or display username instead of password
   -f, --file PATH  password file
   --edit           launch editor to edit password database
+  --gen            generate a random password
   --version        Show the version and exit.
   --help           Show this message and exit.
 ```
