@@ -5,10 +5,6 @@ import os, os.path, random, signal, string
 import click
 from . import __version__, Store, _gpg
 
-style_match = partial(click.style, fg='yellow', bold=True)
-style_error = style_password = partial(click.style, fg='red', bold=True)
-style_success = partial(click.style, fg='green', bold=True, reverse=True)
-
 
 class Mode(object):
     COPY = 'Mode.COPY'
@@ -18,6 +14,15 @@ class Mode(object):
 
 def default_path():
     return os.environ.get('PW_PATH') or click.get_app_dir('passwords.pw')
+
+
+style_match = partial(click.style, fg='yellow', bold=True)
+style_error = style_password = partial(click.style, fg='red', bold=True)
+style_success = partial(click.style, fg='green', bold=True, reverse=True)
+
+
+def highlight_match(pattern, str):
+    return style_match(pattern).join(str.split(pattern)) if pattern else str
 
 
 @click.command()
@@ -115,20 +120,15 @@ def pw(ctx, key_pattern, user_pattern, mode, strict_flag, user_flag, file,
         return
 
     # print results
-    output = ''
     for idx, entry in enumerate(results):
-        # key and user
-        key = style_match(key_pattern).join(
-            entry.key.split(key_pattern)) if key_pattern else entry.key
-        user = style_match(user_pattern).join(
-            entry.user.split(user_pattern)) if user_pattern else entry.user
-        output += key
-        if user:
-            output += ': ' + user
+        # start with key and user
+        line = highlight_match(key_pattern, entry.key)
+        if entry.user:
+            line += ': ' + highlight_match(user_pattern, entry.user)
 
-        # password
+        # add password or copy&paste sucess message
         if mode == Mode.ECHO and not user_flag:
-            output += ' | ' + style_password(entry.password)
+            line += ' | ' + style_password(entry.password)
         elif mode == Mode.COPY and idx == 0:
             try:
                 import pyperclip
@@ -138,21 +138,20 @@ def pw(ctx, key_pattern, user_pattern, mode, strict_flag, user_flag, file,
             except ImportError:
                 result = style_error(
                     '*** PYTHON PACKAGE "PYPERCLIP" NOT FOUND ***')
-            output += ' | ' + result
+            line += ' | ' + result
 
-        # other info
+        # add notes
         if entry.notes:
             if idx == 0:
-                output += '\n'
-                output += "\n".join("   " + line
-                                    for line in entry.notes.splitlines())
+                line += '\n'
+                line += "\n".join("   " + line
+                                  for line in entry.notes.splitlines())
             else:
                 lines = entry.notes.splitlines()
-                output += ' | ' + lines[0]
+                line += ' | ' + lines[0]
                 if len(lines) > 1:
-                    output += " (...)"
-        output += '\n'
-    click.echo(output.rstrip())
+                    line += " (...)"
+        click.echo(line)
 
 
 def launch_editor(ctx, file):
