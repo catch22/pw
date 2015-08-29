@@ -23,7 +23,7 @@ except ImportError:
 setup(
     name='pw',
     version=version,
-    description='Grep GPG-encrypted YAML password safe.',
+    description='Search in GPG-encrypted password file.',
     author='Michael Walter',
     author_email='michael.walter@gmail.com',
     url='https://github.com/catch22/pw',
