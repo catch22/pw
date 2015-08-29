@@ -8,14 +8,14 @@ Usage: pw [OPTIONS] [USER@][KEY] [USER]
   Search for USER and KEY in GPG-encrypted password file.
 
 Options:
-  -C, --copy       copy password to clipboard (default)
-  -E, --echo       print password to console
-  -R, --raw        output password only
-  -S, --strict     fail unless precisely a single result has been found
-  -U, --user       copy or display username instead of password
-  -f, --file PATH  password file
-  --edit           launch editor to edit password database
-  --gen            generate a random password
+  -C, --copy       Copy password to clipboard (default).
+  -E, --echo       Print password to console.
+  -R, --raw        Output password only.
+  -S, --strict     Ensure that precisely a single result has been found.
+  -U, --user       Copy or display username instead of password.
+  -f, --file PATH  Path to password file.
+  --edit           Launch editor to edit password database and exit.
+  --gen            Generate a random password and exit.
   --version        Show the version and exit.
   --help           Show this message and exit.
 ```
