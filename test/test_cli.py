@@ -28,7 +28,10 @@ def test_version(runner):
 
 @pytest.mark.parametrize("args, exit_code, output_expected", [
     # default query
-    ([], 0, u"""
+    (
+        [],
+        0,
+        u"""
 goggles: alice@gogglemail.com
    https://mail.goggles.com/
    second line
@@ -37,26 +40,54 @@ laptop: alice | default user
 laptop: bob
 phones.myphone
 phones.samson
-router: ädmin | multiple (...)"""),
+router: ädmin | multiple (...)""",
+    ),
     # querying for path and user
-    (["goggle"], 0, """
+    (
+        ["goggle"],
+        0,
+        """
 goggles: alice@gogglemail.com
    https://mail.goggles.com/
    second line
 goggles: bob+spam@gogglemail.com
-  """),
-    (["bob@"], 0, """
+  """,
+    ),
+    (
+        ["bob@"],
+        0,
+        """
 goggles: bob+spam@gogglemail.com
 laptop: bob
-  """),
-    (["bob@goggle"], 0, "goggles: bob+spam@gogglemail.com"),
-    (["goggle", "bob"], 0, "goggles: bob+spam@gogglemail.com"),
-    (["bob@goggle", "bob"], 0, ""),
+  """,
+    ),
+    (
+        ["bob@goggle"],
+        0,
+        "goggles: bob+spam@gogglemail.com",
+    ),
+    (
+        ["goggle", "bob"],
+        0,
+        "goggles: bob+spam@gogglemail.com",
+    ),
+    (
+        ["bob@goggle", "bob"],
+        0,
+        "",
+    ),
     # strictness
-    (["--strict", "myphone"], 0, "phones.myphone"),
-    (["--strict", "phones"], 2,
-     "error: multiple or no records found (but using --strict flag)"),
-])
+    (
+        ["--strict", "myphone"],
+        0,
+        "phones.myphone",
+    ),
+    (
+        ["--strict", "phones"],
+        2,
+        "error: multiple or no records found (but using --strict flag)",
+    ),
+])  # yapf: disable
 def test_query(runner, args, exit_code, output_expected):
     result = runner("--echo", "--user", *args)
     assert result.exit_code == exit_code
@@ -65,31 +96,57 @@ def test_query(runner, args, exit_code, output_expected):
 
 def test_missing():
     runner = CliRunner()
-    result = runner.invoke(pw.__main__.pw, ('--file', 'MISSING'))
+    result = runner.invoke(pw.__main__.pw, ('--file', 'XXX'))
     assert result.exit_code == 1
-    assert "error: password store not found at 'MISSING'" == result.output.strip(
-    )
+    assert "error: password store not found at 'XXX'" == result.output.strip()
 
 
 CLIPBOARD_NOT_TOUCHED = u'CLIPBOARD_NOT_TOUCHED'
 
-
-@pytest.mark.parametrize(
-    "args, exit_code, output_expected, clipboard_expected", [
-        (["laptop", "bob"], 0,
-         "laptop: bob | *** PASSWORD COPIED TO CLIPBOARD ***", "b0b"),
-        (["--copy", "laptop", "bob"], 0,
-         "laptop: bob | *** PASSWORD COPIED TO CLIPBOARD ***", "b0b"),
-        (["--copy", "--user", "laptop", "bob"], 0,
-         "laptop: bob | *** USERNAME COPIED TO CLIPBOARD ***", "bob"),
-        (["--echo", "laptop", "bob"], 0, "laptop: bob | b0b",
-         CLIPBOARD_NOT_TOUCHED),
-        (["--echo", "--user", "laptop", "bob"], 0, "laptop: bob",
-         CLIPBOARD_NOT_TOUCHED),
-        (["--raw", "laptop", "bob"], 0, "b0b", CLIPBOARD_NOT_TOUCHED),
-        (["--raw", "--user", "laptop", "bob"], 0, "bob", CLIPBOARD_NOT_TOUCHED
-         ),
-    ])
+@pytest.mark.parametrize("args, exit_code, output_expected, clipboard_expected", [
+    (
+        ["laptop", "bob"],
+        0,
+        "laptop: bob | *** PASSWORD COPIED TO CLIPBOARD ***",
+        "b0b",
+    ),
+    (
+        ["--copy", "laptop", "bob"],
+        0,
+        "laptop: bob | *** PASSWORD COPIED TO CLIPBOARD ***",
+        "b0b",
+    ),
+    (
+        ["--copy", "--user", "laptop", "bob"],
+        0,
+        "laptop: bob | *** USERNAME COPIED TO CLIPBOARD ***",
+        "bob",
+    ),
+    (
+        ["--echo", "laptop", "bob"],
+        0,
+        "laptop: bob | b0b",
+        CLIPBOARD_NOT_TOUCHED,
+    ),
+    (
+        ["--echo", "--user", "laptop", "bob"],
+        0,
+        "laptop: bob",
+        CLIPBOARD_NOT_TOUCHED,
+    ),
+    (
+        ["--raw", "laptop", "bob"],
+        0,
+        "b0b",
+        CLIPBOARD_NOT_TOUCHED,
+    ),
+    (
+        ["--raw", "--user", "laptop", "bob"],
+        0,
+        "bob",
+        CLIPBOARD_NOT_TOUCHED,
+    ),
+])  # yapf: disable
 def test_modes(runner, args, exit_code, output_expected, clipboard_expected):
     pyperclip.copy(CLIPBOARD_NOT_TOUCHED)
     result = runner(*args)
