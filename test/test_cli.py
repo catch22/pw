@@ -17,7 +17,8 @@ def runner(request):
 
     # instantiate runner and provide database path
     runner = CliRunner()
-    return lambda *args: runner.invoke(pw.__main__.pw, ('--file', request.param) + args)
+    abspath = os.path.join(dirname, request.param)
+    return lambda *args: runner.invoke(pw.__main__.pw, ('--file', abspath) + args)
 
 
 def test_version(runner):
