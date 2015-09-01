@@ -1,0 +1,5 @@
+[report]
+exclude_lines =
+    except ImportError
+    if __name__ == '__main__': 
+    def handle_sigint
