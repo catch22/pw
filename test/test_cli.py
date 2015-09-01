@@ -2,12 +2,13 @@
 from __future__ import absolute_import, division, print_function
 from functools import partial
 from click.testing import CliRunner
-import os.path
+import os.path, sys, tempfile
 import pytest
 import pw, pw.__main__
 import pyperclip
 
 
+@pytest.fixture()
 def dirname():
     return os.path.dirname(os.path.abspath(__file__))
 
@@ -212,3 +213,72 @@ def test_gen(runner, args, use_clipboard, length_expected):
         assert len(output) == length_expected
         assert all(c in pw.__main__.RANDOM_PASSWORD_ALPHABET for c in output)
         assert clipboard == CLIPBOARD_NOT_TOUCHED
+
+
+def test_edit_without_changes(runner):
+    os.environ['PW_EDITOR'] = 'echo CALLED FOR'
+    os.environ['PW_GPG_RECIPIENT'] = 'test.user@localhost'
+    result = runner('--edit')
+    assert result.exit_code == 0
+    assert result.output.strip() == 'not modified'
+
+
+def test_edit_editor_missing(runner):
+    os.environ.pop('PW_EDITOR', None)
+    os.environ['PW_GPG_RECIPIENT'] = 'test.user@localhost'
+    result = runner("--edit")
+    assert result.exit_code == 1
+    assert result.output.strip().startswith('error: no editor set')
+
+
+@pytest.fixture(scope='module', params=['db.pw.gpg', 'db.pw.asc'])
+def encrypted_runner(request):
+    return runner(request)
+
+
+def test_edit_recipient_missing(encrypted_runner):
+    os.environ['PW_EDITOR'] = 'echo CALLED FOR'
+    os.environ.pop('PW_GPG_RECIPIENT', None)
+    result = encrypted_runner("--edit")
+    assert result.exit_code == 1
+    assert result.output.strip().startswith('error: no recipient set')
+
+
+def test_edit_file_missing():
+    os.environ['PW_EDITOR'] = 'echo CALLED FOR'
+    os.environ['PW_GPG_RECIPIENT'] = 'test.user@localhost'
+    runner = CliRunner()
+    result = runner.invoke(pw.__main__.pw, ('--file', 'XXX', '--edit'))
+    assert result.exit_code == 1
+    assert "error: password store not found at 'XXX'" == result.output.strip()
+
+
+@pytest.mark.parametrize('filename, addendum', [
+    ('db.pw', 'fancy_new_entry: user pass interesting notes'),
+    ('db.pw.gpg', 'fancy_new_entry: user pass interesting notes'),
+    ('db.pw.asc', 'fancy_new_entry: user pass interesting notes'),
+    ('db.yaml', 'fancy_new_entry: {U: user, P: pass, N: interesting notes}'),
+])
+def test_edit_with_changes(dirname, filename, addendum):
+    fp = tempfile.NamedTemporaryFile(delete=False, suffix=filename)
+    try:
+        # copy password file to temporary file
+        abspath = os.path.join(dirname, filename)
+        original = open(abspath, 'rb').read()
+        fp.write(original)
+        fp.close()
+
+        # call pw --edit and modify file
+        os.environ['PW_EDITOR'] = 'echo %s >> ' % addendum
+        os.environ['PW_GPG_RECIPIENT'] = 'test.user@localhost'
+        runner = CliRunner()
+        runner.invoke(pw.__main__.pw, ('--file', fp.name, '--edit'))
+
+        # try to find new entry
+        store = pw.Store.load(fp.name)
+        result = store.search(key_pattern='fancy', user_pattern='')
+        assert len(result) == 1
+        assert result[0] == pw.Entry('fancy_new_entry', 'user', 'pass',
+                                     'interesting notes')
+    finally:
+        os.unlink(fp.name)

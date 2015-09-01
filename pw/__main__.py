@@ -193,10 +193,11 @@ def launch_editor(ctx, file):
             ctx.exit(1)
 
     # launch the editor
+    ext = _gpg.unencrypted_ext(file)
     modified = click.edit(original.decode('utf-8'),
                           editor=editor,
                           require_save=True,
-                          extension='.yaml')
+                          extension=ext)
     if modified is None:
         click.echo("not modified")
         return
