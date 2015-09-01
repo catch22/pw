@@ -43,9 +43,10 @@ class Store:
         """Load password store from file."""
         # load source (decrypting if necessary)
         if _gpg.is_encrypted(path):
-            src = _gpg.decrypt(path)
+            src_bytes = _gpg.decrypt(path)
         else:
-            src = open(path, 'rb').read()
+            src_bytes = open(path, 'rb').read()
+        src = src_bytes.decode('utf-8')
 
         # parse database source
         ext = _gpg.unencrypted_ext(path)
@@ -72,7 +73,7 @@ def _parse_entries(src):
     entries = []
     state = _EXPECT_ENTRY
 
-    for lineno, line in enumerate(src.decode('utf-8').splitlines()):
+    for lineno, line in enumerate(src.splitlines()):
         # empty lines are skipped (but also terminate the notes section)
         sline = line.strip()
         if not sline or line.startswith('#'):

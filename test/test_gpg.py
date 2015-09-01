@@ -43,14 +43,14 @@ def test_detection():
 def test_decrypt(dirname, filename):
     # manually decrypt password file & compare with unencrypted file in repository
     decrypted = decrypt(os.path.join(dirname, filename))
-    unencrypted = open(os.path.join(dirname, 'db.pw')).read()
+    unencrypted = open(os.path.join(dirname, 'db.pw'), 'rb').read()
     assert decrypted == unencrypted
 
 
 @pytest.mark.parametrize("filename", ["db.pw.asc", "db.pw.gpg"])
 def test_encrypt(dirname, filename):
     # load unencrypted password file
-    unencrypted = open(os.path.join(dirname, 'db.pw')).read()
+    unencrypted = open(os.path.join(dirname, 'db.pw'), 'rb').read()
 
     # encrypt into temporary file, decrypt again, and compare result
     fp = tempfile.NamedTemporaryFile(delete=False, suffix=filename)

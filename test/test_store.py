@@ -21,17 +21,17 @@ def test_normalized_key():
 
 @pytest.mark.parametrize("src, expected", [
     (
-        "",
+        u"",
         [],
     ),
     (
-        """
+        u"""
 # this is a comment
         """,
         [],
     ),
     (
-        """
+        u"""
 key pass
 key: pass
 #
@@ -56,7 +56,7 @@ key: "pass word"
         ]
     ),
     (
-        """
+        u"""
 key user pass
 key: user pass
 #
@@ -71,7 +71,7 @@ key: user pass
         ],
     ),
     (
-        """
+        u"""
 key user pass these are some interesting notes
 key: user pass these are some interesting notes
 #
@@ -86,7 +86,7 @@ key: user pass these are some interesting notes
         ],
     ),
     (
-        """
+        u"""
 key pass
     notes line 1
     notes line 2
@@ -122,7 +122,7 @@ key "" pass notes line 0
         ],
     ),
     (
-        """
+        u"""
 key user pass
     notes line 1
     notes line 2
@@ -158,7 +158,7 @@ key user pass notes line 0
         ],
     ),
     (
-        """
+        u"""
 "السلام عليكم": 임요환 Нет Εις το επανιδείν
         """,
         [
@@ -172,7 +172,7 @@ def test_parse_entries(src, expected):
 
 @pytest.mark.parametrize("src, expected_error_prefix", [
     (
-        """
+        u"""
 foo: bar
   note line 1
 
@@ -181,7 +181,7 @@ foo: bar
         "line 4: expecting entry (",
     ),
     (
-        """
+        u"""
 foo: bar
   note line 1
 # non-indented comment
@@ -190,7 +190,7 @@ foo: bar
         "line 4: expecting entry (",
     ),
     (
-        """
+        u"""
 foo: bar
 baz
 boink: zonk
@@ -198,19 +198,19 @@ boink: zonk
         "line 2: expecting entry or notes (",
     ),
     (
-        """
+        u"""
 foo": bar
         """,
         "line 1: No closing quotation (",
     ),
     (
-        """
+        u"""
 foo: "bar
         """,
         "line 1: No closing quotation (",
     ),
     (
-        """
+        u"""
 foo: bar "baz
         """,
         "line 1: No closing quotation (",
