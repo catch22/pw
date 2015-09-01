@@ -8,16 +8,21 @@ import pw, pw.__main__
 import pyperclip
 
 
+def dirname():
+    return os.path.dirname(os.path.abspath(__file__))
+
+
+def setup_module(module):
+    # override GPG homedir
+    pw._gpg._OVERRIDE_HOMEDIR = os.path.join(dirname(), 'keys')
+
+
 @pytest.fixture(scope='module',
                 params=['db.pw', 'db.pw.gpg', 'db.pw.asc', 'db.yaml'])
 def runner(request):
-    # override GPG homedir
-    dirname = os.path.dirname(os.path.abspath(__file__))
-    pw._gpg._OVERRIDE_HOMEDIR = os.path.join(dirname, 'keys')
-
     # instantiate runner and provide database path
     runner = CliRunner()
-    abspath = os.path.join(dirname, request.param)
+    abspath = os.path.join(dirname(), request.param)
     return lambda *args: runner.invoke(pw.__main__.pw, ('--file', abspath) + args)
 
 
@@ -41,7 +46,8 @@ laptop: alice | default user
 laptop: bob
 phones.myphone
 phones.samson
-router: ädmin | multiple (...)""",
+router: ädmin | multiple (...)
+        """,
     ),
     # querying for path and user
     (
@@ -52,7 +58,7 @@ goggles: alice@gogglemail.com
    https://mail.goggles.com/
    second line
 goggles: bob+spam@gogglemail.com
-  """,
+        """,
     ),
     (
         ["bob@"],
@@ -60,7 +66,7 @@ goggles: bob+spam@gogglemail.com
         """
 goggles: bob+spam@gogglemail.com
 laptop: bob
-  """,
+        """,
     ),
     (
         ["bob@goggle"],

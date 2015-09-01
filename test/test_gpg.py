@@ -5,10 +5,14 @@ import pw._gpg
 from pw._gpg import is_encrypted, has_armor, unencrypted_ext, decrypt, encrypt
 
 
+@pytest.fixture(scope='module')
+def dirname():
+    return os.path.dirname(os.path.abspath(__file__))
+
+
 def setup_module(module):
     # override GPG homedir
-    dirname = os.path.dirname(os.path.abspath(__file__))
-    pw._gpg._OVERRIDE_HOMEDIR = os.path.join(dirname, 'keys')
+    pw._gpg._OVERRIDE_HOMEDIR = os.path.join(dirname(), 'keys')
 
 
 def test_detection():
@@ -36,18 +40,16 @@ def test_detection():
 
 
 @pytest.mark.parametrize("filename", ["db.pw.asc", "db.pw.gpg"])
-def test_decrypt(filename):
+def test_decrypt(dirname, filename):
     # manually decrypt password file & compare with unencrypted file in repository
-    dirname = os.path.dirname(os.path.abspath(__file__))
     decrypted = decrypt(os.path.join(dirname, filename))
     unencrypted = open(os.path.join(dirname, 'db.pw')).read()
     assert decrypted == unencrypted
 
 
 @pytest.mark.parametrize("filename", ["db.pw.asc", "db.pw.gpg"])
-def test_encrypt(filename):
+def test_encrypt(dirname, filename):
     # load unencrypted password file
-    dirname = os.path.dirname(os.path.abspath(__file__))
     unencrypted = open(os.path.join(dirname, 'db.pw')).read()
 
     # encrypt into temporary file, decrypt again, and compare result

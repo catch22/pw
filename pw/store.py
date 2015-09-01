@@ -11,7 +11,7 @@ from . import _gpg
 Entry = namedtuple('Entry', ['key', 'user', 'password', 'notes'])
 
 
-def normalized_key(key):
+def _normalized_key(key):
     return key.replace(' ', '_').lower()
 
 
@@ -20,13 +20,14 @@ class Store:
 
     def __init__(self, path, entries):
         # normalize keys
-        self.entries = [e._replace(key=normalized_key(e.key)) for e in entries]
+        self.entries = [e._replace(key=_normalized_key(e.key)) for e in entries
+                        ]
         self.path = path
 
     def search(self, key_pattern, user_pattern):
         """Search database for given key and user pattern."""
         # normalize key
-        key_pattern = normalized_key(key_pattern)
+        key_pattern = _normalized_key(key_pattern)
 
         # search
         results = []
@@ -63,24 +64,24 @@ class SyntaxError(Exception):
             'line %s: %s (%r)' % (lineno + 1, reason, line))
 
 
-EXPECT_ENTRY = 'expecting entry'
-EXPECT_ENTRY_OR_NOTES = 'expecting entry or notes'
+_EXPECT_ENTRY = 'expecting entry'
+_EXPECT_ENTRY_OR_NOTES = 'expecting entry or notes'
 
 
 def _parse_entries(src):
     entries = []
-    state = EXPECT_ENTRY
+    state = _EXPECT_ENTRY
 
     for lineno, line in enumerate(src.decode('utf-8').splitlines()):
         # empty lines are skipped (but also terminate the notes section)
         sline = line.strip()
-        if not sline or sline.startswith('#'):
-            state = EXPECT_ENTRY
+        if not sline or line.startswith('#'):
+            state = _EXPECT_ENTRY
             continue
 
         # non-empty line with leading spaces is interpreted as a notes line
         if line[0] in [' ', '\t']:
-            if state != EXPECT_ENTRY_OR_NOTES:
+            if state != _EXPECT_ENTRY_OR_NOTES:
                 raise SyntaxError(lineno, line, state)
 
             # add line of notes
@@ -91,40 +92,39 @@ def _parse_entries(src):
             entries[-1] = entries[-1]._replace(notes=notes)
             continue
 
-        # parse line using shlex
+        # otherwise, parse as an entry
         sio = StringIO(line)
         lexer = shlex(sio, posix=True)
         lexer.whitespace_split = True
 
-        # otherwise, parse as an entry
         try:
             key = lexer.get_token()
         except ValueError as e:
             raise SyntaxError(lineno, line, str(e))
-        if not key:
-            raise SyntaxError(lineno, line, state)
         key = key.rstrip(':')
+        assert key
 
         try:
             user = lexer.get_token()
         except ValueError as e:
             raise SyntaxError(lineno, line, str(e))
-        if not user:
-            raise SyntaxError(lineno, line, state)
-        user = user
 
         try:
             password = lexer.get_token()
         except ValueError as e:
             raise SyntaxError(lineno, line, str(e))
+
+        if not user and not password:
+            raise SyntaxError(lineno, line, state)
+
         if not password:
             password = user
-            user = notes = ''
+            user = notes = u''
         else:
             password = password
             notes = sio.read().strip()
 
         entries.append(Entry(key, user, password, notes))
-        state = EXPECT_ENTRY_OR_NOTES
+        state = _EXPECT_ENTRY_OR_NOTES
 
     return entries
