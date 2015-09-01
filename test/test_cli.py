@@ -13,7 +13,7 @@ import pyperclip
 def runner(request):
     # override GPG homedir
     dirname = os.path.dirname(os.path.abspath(__file__))
-    pw._gpg.OVERRIDE_HOMEDIR = os.path.join(dirname, 'keys')
+    pw._gpg._OVERRIDE_HOMEDIR = os.path.join(dirname, 'keys')
 
     # instantiate runner and provide database path
     runner = CliRunner()
