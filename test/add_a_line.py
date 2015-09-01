@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 import sys
 
 assert len(sys.argv) == 3

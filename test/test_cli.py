@@ -270,7 +270,8 @@ def test_edit_with_changes(dirname, filename, addendum):
 
         # call pw --edit and modify file
         editor = os.path.join(dirname, 'add_a_line.py')
-        os.environ['PW_EDITOR'] = 'python "%s" "%s"' % (editor, addendum)
+        os.environ['PW_EDITOR'] = '%s "%s" "%s"' % (sys.executable, editor,
+                                                    addendum)
         os.environ['PW_GPG_RECIPIENT'] = 'test.user@localhost'
         runner = CliRunner()
         result = runner.invoke(pw.__main__.pw, ('--file', fp.name, '--edit'))
