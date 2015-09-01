@@ -1,7 +1,7 @@
 .PHONY: test test-coverage upload-release pretty encrypt-test-db
 
 test:
-	cd test && python -m pytest
+	py.test
 
 test-pw:
 	PYTHONPATH=. python -m pw --file test/db.pw ${ARGS}
