@@ -269,10 +269,13 @@ def test_edit_with_changes(dirname, filename, addendum):
         fp.close()
 
         # call pw --edit and modify file
-        os.environ['PW_EDITOR'] = 'echo %s >> ' % addendum
+        editor = os.path.join(dirname, 'add_a_line.py')
+        os.environ['PW_EDITOR'] = 'python "%s" "%s"' % (editor, addendum)
         os.environ['PW_GPG_RECIPIENT'] = 'test.user@localhost'
         runner = CliRunner()
-        runner.invoke(pw.__main__.pw, ('--file', fp.name, '--edit'))
+        result = runner.invoke(pw.__main__.pw, ('--file', fp.name, '--edit'))
+        assert result.exit_code == 0
+        assert result.output.strip() == ''
 
         # try to find new entry
         store = pw.Store.load(fp.name)
