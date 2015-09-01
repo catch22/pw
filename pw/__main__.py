@@ -25,6 +25,10 @@ def highlight_match(pattern, str):
     return style_match(pattern).join(str.split(pattern)) if pattern else str
 
 
+RANDOM_PASSWORD_DEFAULT_LENGTH = 32
+RANDOM_PASSWORD_ALPHABET = string.ascii_letters + string.digits
+
+
 @click.command()
 @click.argument('key_pattern', metavar='[USER@][KEY]', default='')
 @click.argument('user_pattern', metavar='[USER]', default='')
@@ -209,13 +213,11 @@ def launch_editor(ctx, file):
 
 def generate_password(mode, length):
     """generate a random password"""
-    RANDOM_ALPHABET = string.ascii_letters + string.digits
-    DEFAULT_LENGTH = 32
-
     # generate random password
     r = random.SystemRandom()
-    length = length or DEFAULT_LENGTH
-    password = ''.join(r.choice(RANDOM_ALPHABET) for _ in range(length))
+    length = length or RANDOM_PASSWORD_DEFAULT_LENGTH
+    password = ''.join(r.choice(RANDOM_PASSWORD_ALPHABET)
+                       for _ in range(length))
 
     # copy or echo generated password
     if mode == Mode.ECHO:

@@ -104,53 +104,105 @@ def test_missing():
 
 CLIPBOARD_NOT_TOUCHED = u'CLIPBOARD_NOT_TOUCHED'
 
-@pytest.mark.parametrize("args, exit_code, output_expected, clipboard_expected", [
+@pytest.mark.parametrize("args, output_expected, clipboard_expected", [
     (
         ["laptop", "bob"],
-        0,
         "laptop: bob | *** PASSWORD COPIED TO CLIPBOARD ***",
         "b0b",
     ),
     (
         ["--copy", "laptop", "bob"],
-        0,
         "laptop: bob | *** PASSWORD COPIED TO CLIPBOARD ***",
         "b0b",
     ),
     (
         ["--copy", "--user", "laptop", "bob"],
-        0,
         "laptop: bob | *** USERNAME COPIED TO CLIPBOARD ***",
         "bob",
     ),
     (
         ["--echo", "laptop", "bob"],
-        0,
         "laptop: bob | b0b",
         CLIPBOARD_NOT_TOUCHED,
     ),
     (
         ["--echo", "--user", "laptop", "bob"],
-        0,
         "laptop: bob",
         CLIPBOARD_NOT_TOUCHED,
     ),
     (
         ["--raw", "laptop", "bob"],
-        0,
         "b0b",
         CLIPBOARD_NOT_TOUCHED,
     ),
     (
         ["--raw", "--user", "laptop", "bob"],
-        0,
         "bob",
         CLIPBOARD_NOT_TOUCHED,
     ),
 ])  # yapf: disable
-def test_modes(runner, args, exit_code, output_expected, clipboard_expected):
+def test_modes(runner, args, output_expected, clipboard_expected):
     pyperclip.copy(CLIPBOARD_NOT_TOUCHED)
     result = runner(*args)
-    assert result.exit_code == exit_code
+    assert result.exit_code == 0
     assert result.output.strip() == output_expected.strip()
     assert pyperclip.paste() == clipboard_expected.strip()
+
+
+@pytest.mark.parametrize("args, use_clipboard, length_expected", [
+    (
+        ["--gen"],
+        True,
+        pw.__main__.RANDOM_PASSWORD_DEFAULT_LENGTH,
+    ),
+    (
+        ["--gen", "--copy"],
+        True,
+        pw.__main__.RANDOM_PASSWORD_DEFAULT_LENGTH,
+    ),
+    (
+        ["--gen", "--echo"],
+        False,
+        pw.__main__.RANDOM_PASSWORD_DEFAULT_LENGTH,
+    ),
+    (
+        ["--gen", "--echo", "--raw"],
+        False,
+        pw.__main__.RANDOM_PASSWORD_DEFAULT_LENGTH,
+    ),
+    (
+        ["--gen", "8"],
+        True,
+        8,
+    ),
+    (
+        ["--gen", "--copy", "8"],
+        True,
+        8,
+    ),
+    (
+        ["--gen", "--echo", "8"],
+        False,
+        8,
+    ),
+    (
+        ["--gen", "--echo", "--raw", "8"],
+        False,
+        8,
+    ),
+])  # yapf: disable
+def test_gen(runner, args, use_clipboard, length_expected):
+    pyperclip.copy(CLIPBOARD_NOT_TOUCHED)
+    result = runner(*args)
+    assert result.exit_code == 0
+    output = result.output.strip()
+    clipboard = pyperclip.paste()
+    if use_clipboard:
+        assert output == "*** PASSWORD COPIED TO CLIPBOARD ***"
+        assert len(clipboard) == length_expected
+        assert all(c in pw.__main__.RANDOM_PASSWORD_ALPHABET
+                   for c in clipboard)
+    else:
+        assert len(output) == length_expected
+        assert all(c in pw.__main__.RANDOM_PASSWORD_ALPHABET for c in output)
+        assert clipboard == CLIPBOARD_NOT_TOUCHED
