@@ -205,7 +205,8 @@ def launch_editor(ctx, file):
 
     # not encrypted? simply overwrite file
     if not is_encrypted:
-        open(file, 'wb').write(modified)
+        with open(file, 'wb') as fp:
+            fp.write(modified)
         return
 
     # otherwise, the process is somewhat more complicated

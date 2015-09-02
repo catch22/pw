@@ -5,5 +5,3 @@ import os, sys
 assert len(sys.argv) == 3
 with open(sys.argv[2], 'a') as fp:
     fp.write('\n%s\n' % sys.argv[1])
-    fp.flush()
-    os.fsync(fp.fileno())
