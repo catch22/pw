@@ -10,11 +10,10 @@ EXTENSIONS = ['.yaml', '.yml']
 
 def make_entry(key, dict):
     notes = ' | '.join(str(dict[key]) for key in ['L', 'N'] if key in dict)
-    return Entry(
-        key=key,
-        user=str(dict.get('U', '')),
-        password=str(dict.get('P', '')),
-        notes=notes)
+    return Entry(key=key,
+                 user=str(dict.get('U', '')),
+                 password=str(dict.get('P', '')),
+                 notes=notes)
 
 
 def parse_entries(src):

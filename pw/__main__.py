@@ -143,8 +143,9 @@ def pw(ctx, key_pattern, user_pattern, mode, strict_flag, user_flag, file,
             try:
                 import pyperclip
                 pyperclip.copy(entry.user if user_flag else entry.password)
-                result = style_success('*** %s COPIED TO CLIPBOARD ***' % (
-                    "USERNAME" if user_flag else "PASSWORD"))
+                result = style_success('*** %s COPIED TO CLIPBOARD ***' %
+                                       ("USERNAME" if user_flag else
+                                        "PASSWORD"))
             except ImportError:
                 result = style_error(
                     '*** PYTHON PACKAGE "PYPERCLIP" NOT FOUND ***')
@@ -194,10 +195,11 @@ def launch_editor(ctx, file):
 
     # launch the editor
     ext = _gpg.unencrypted_ext(file)
-    modified = click.edit(original.decode('utf-8'),
-                          editor=editor,
-                          require_save=True,
-                          extension=ext)
+    modified = click.edit(
+        original.decode('utf-8'),
+        editor=editor,
+        require_save=True,
+        extension=ext)
     if modified is None:
         click.echo("not modified")
         return

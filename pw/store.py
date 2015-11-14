@@ -20,8 +20,8 @@ class Store:
 
     def __init__(self, path, entries):
         # normalize keys
-        self.entries = [e._replace(key=_normalized_key(e.key)) for e in entries
-                        ]
+        self.entries = [e._replace(key=_normalized_key(e.key))
+                        for e in entries]
         self.path = path
 
     def search(self, key_pattern, user_pattern):
@@ -61,8 +61,8 @@ class Store:
 
 class SyntaxError(Exception):
     def __init__(self, lineno, line, reason):
-        super(SyntaxError, self).__init__(
-            'line %s: %s (%r)' % (lineno + 1, reason, line))
+        super(SyntaxError, self).__init__('line %s: %s (%r)' %
+                                          (lineno + 1, reason, line))
 
 
 _EXPECT_ENTRY = 'expecting entry'
