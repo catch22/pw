@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 from __future__ import absolute_import, division, print_function
 from functools import partial
-import os, os.path, random, signal, string
+import os, os.path, random, signal, string, sys
 import click
 from . import __version__, Store, _gpg
 
@@ -78,7 +78,7 @@ RANDOM_PASSWORD_ALPHABET = string.ascii_letters + string.digits
               is_flag=True,
               help='Generate a random password and exit.')
 @click.version_option(version=__version__,
-                      message='%(prog)s version %(version)s')
+                      message='pw version %(version)s\npython ' + sys.version)
 @click.pass_context
 def pw(ctx, key_pattern, user_pattern, mode, strict_flag, user_flag, file,
        edit_subcommand, gen_subcommand):
