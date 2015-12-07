@@ -13,7 +13,7 @@ class Mode(object):
 
 
 def default_path():
-    return os.environ.get('PW_PATH') or click.get_app_dir('passwords.pw')
+    return os.environ.get('PW_PATH') or click.get_app_dir('passwords.pw.asc')
 
 
 style_match = partial(click.style, fg='yellow', bold=True)
