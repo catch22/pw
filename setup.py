@@ -11,8 +11,10 @@ with io.open('pw/__init__.py', encoding='utf-8') as fp:
     version = str(ast.literal_eval(version_code))
 
 # read long description and convert to RST
-long_description = io.open(join(dirname(abspath(__file__)), 'README.md'),
-                           encoding='utf-8').read()
+long_description = io.open(
+    join(
+        dirname(abspath(__file__)), 'README.md'),
+    encoding='utf-8').read()
 try:
     import pypandoc
     long_description = pypandoc.convert(long_description, 'rst', format='md')
@@ -37,6 +39,7 @@ setup(
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.4',
+        'Programming Language :: Python :: 3.5',
         'Development Status :: 4 - Beta',
         'Environment :: Console',
         'License :: OSI Approved :: MIT License',
