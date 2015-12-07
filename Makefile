@@ -3,13 +3,16 @@
 test:
 	py.test
 
-test-pw:
-	PYTHONPATH=. python -m pw --file test/db.pw ${ARGS}
+test-pw-python2:
+	PYTHONPATH=. python2 -m pw --file test/db.pw ${ARGS}
+
+test-pw-python3:
+	PYTHONPATH=. python3 -m pw --file test/db.pw ${ARGS}
 
 upload-release:
-	python -c "import wheel, pypandoc"  # check upload dependencies
-	python -c "import subprocess; assert 'dev' not in subprocess.check_output('python setup.py --version', shell=True).strip(), 'trying to upload dev release'"
-	python setup.py sdist bdist_wheel
+	python3 -c "import wheel, pypandoc"  # check upload dependencies
+	python3 -c "import subprocess; assert b'dev' not in subprocess.check_output('python3 setup.py --version', shell=True).strip(), 'trying to upload dev release'"
+	python3 setup.py sdist bdist_wheel
 	#python setup.py upload
 	twine upload dist/*
 
