@@ -10,10 +10,11 @@ EXTENSIONS = ['.yaml', '.yml']
 
 def make_entry(key, dict):
     notes = ' | '.join(str(dict[key]) for key in ['L', 'N'] if key in dict)
-    return Entry(key=key,
-                 user=str(dict.get('U', '')),
-                 password=str(dict.get('P', '')),
-                 notes=notes)
+    return Entry(
+        key=key,
+        user=str(dict.get('U', '')),
+        password=str(dict.get('P', '')),
+        notes=notes)
 
 
 def parse_entries(src):
@@ -44,10 +45,8 @@ def _collect_entries(current_node, current_key):
 
     # single password?
     if not isinstance(current_node, dict):
-        yield Entry(key=current_key,
-                    user='',
-                    password=str(current_node),
-                    notes='')
+        yield Entry(
+            key=current_key, user='', password=str(current_node), notes='')
         return
 
     # otherwise: subtree!
@@ -57,6 +56,6 @@ def _collect_entries(current_node, current_key):
             continue
 
         # recurse
-        for entry in _collect_entries(child_node, current_key + '.' + key if
-                                      current_key else key):
+        for entry in _collect_entries(child_node, current_key + '.' + key
+                                      if current_key else key):
             yield entry

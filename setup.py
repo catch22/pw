@@ -12,9 +12,7 @@ with io.open('pw/__init__.py', encoding='utf-8') as fp:
 
 # read long description and convert to RST
 long_description = io.open(
-    join(
-        dirname(abspath(__file__)), 'README.md'),
-    encoding='utf-8').read()
+    join(dirname(abspath(__file__)), 'README.md'), encoding='utf-8').read()
 try:
     import pypandoc
     long_description = pypandoc.convert(long_description, 'rst', format='md')

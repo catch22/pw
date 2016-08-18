@@ -38,47 +38,52 @@ RANDOM_PASSWORD_ALPHABET = string.ascii_letters + string.digits
     'mode',
     flag_value=Mode.COPY,
     default=True,
-    help=
-    'Display account information, but copy password to clipboard (default mode).'
+    help='Display account information, but copy password to clipboard (default mode).'
 )
 @click.option(
     '--echo',
     '-E',
     'mode',
     flag_value=Mode.ECHO,
-    help=
-    'Display account information as well as password in plaintext (alternative mode).'
+    help='Display account information as well as password in plaintext (alternative mode).'
 )
-@click.option('--raw',
-              '-R',
-              'mode',
-              flag_value=Mode.RAW,
-              help='Only display password in plaintext (alternative mode).')
-@click.option('--strict',
-              '-S',
-              'strict_flag',
-              is_flag=True,
-              help='Fail unless precisely a single result has been found.')
-@click.option('--user',
-              '-U',
-              'user_flag',
-              is_flag=True,
-              help="Copy or display username instead of password.")
-@click.option('--file',
-              '-f',
-              metavar='PATH',
-              default=default_path(),
-              help='Path to password file.')
-@click.option('--edit',
-              'edit_subcommand',
-              is_flag=True,
-              help='Launch editor to edit password database and exit.')
-@click.option('--gen',
-              'gen_subcommand',
-              is_flag=True,
-              help='Generate a random password and exit.')
-@click.version_option(version=__version__,
-                      message='pw version %(version)s\npython ' + sys.version)
+@click.option(
+    '--raw',
+    '-R',
+    'mode',
+    flag_value=Mode.RAW,
+    help='Only display password in plaintext (alternative mode).')
+@click.option(
+    '--strict',
+    '-S',
+    'strict_flag',
+    is_flag=True,
+    help='Fail unless precisely a single result has been found.')
+@click.option(
+    '--user',
+    '-U',
+    'user_flag',
+    is_flag=True,
+    help="Copy or display username instead of password.")
+@click.option(
+    '--file',
+    '-f',
+    metavar='PATH',
+    default=default_path(),
+    help='Path to password file.')
+@click.option(
+    '--edit',
+    'edit_subcommand',
+    is_flag=True,
+    help='Launch editor to edit password database and exit.')
+@click.option(
+    '--gen',
+    'gen_subcommand',
+    is_flag=True,
+    help='Generate a random password and exit.')
+@click.version_option(
+    version=__version__,
+    message='pw version %(version)s\npython ' + sys.version)
 @click.pass_context
 def pw(ctx, key_pattern, user_pattern, mode, strict_flag, user_flag, file,
        edit_subcommand, gen_subcommand):
@@ -144,8 +149,8 @@ def pw(ctx, key_pattern, user_pattern, mode, strict_flag, user_flag, file,
                 import pyperclip
                 pyperclip.copy(entry.user if user_flag else entry.password)
                 result = style_success('*** %s COPIED TO CLIPBOARD ***' %
-                                       ("USERNAME" if user_flag else
-                                        "PASSWORD"))
+                                       ("USERNAME"
+                                        if user_flag else "PASSWORD"))
             except ImportError:
                 result = style_error(
                     '*** PYTHON PACKAGE "PYPERCLIP" NOT FOUND ***')
@@ -220,8 +225,8 @@ def generate_password(mode, length):
     # generate random password
     r = random.SystemRandom()
     length = length or RANDOM_PASSWORD_DEFAULT_LENGTH
-    password = ''.join(r.choice(RANDOM_PASSWORD_ALPHABET)
-                       for _ in range(length))
+    password = ''.join(
+        r.choice(RANDOM_PASSWORD_ALPHABET) for _ in range(length))
 
     # copy or echo generated password
     if mode == Mode.ECHO:

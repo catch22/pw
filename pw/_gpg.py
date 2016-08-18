@@ -44,9 +44,10 @@ def encrypt(recipient, dest_path, content):
     if has_armor(dest_path):
         args += ["--armor"]
     args += ["--recipient", recipient, "--output", dest_path]
-    popen = subprocess.Popen(_base_args() + args,
-                             stdin=subprocess.PIPE,
-                             stdout=subprocess.PIPE,
-                             stderr=subprocess.PIPE)
+    popen = subprocess.Popen(
+        _base_args() + args,
+        stdin=subprocess.PIPE,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE)
     stdout, stderr = popen.communicate(content)
     assert popen.returncode == 0, stderr
