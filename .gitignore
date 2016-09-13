@@ -8,3 +8,5 @@ pw.sublime-workspace
 /test/htmlcov
 /test/keys/random_seed
 /test/keys/trustdb.gpg.lock
+/test/keys/.gpg-v21-migrated
+/test/keys/private-keys-v1.d
