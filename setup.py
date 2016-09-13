@@ -1,6 +1,6 @@
 from __future__ import absolute_import, division, print_function
 from setuptools import setup
-import ast, io, re
+import ast, io, re, sys
 from os.path import join, dirname, abspath
 
 # determine __version__ from pw.py source (adapted from mitsuhiko)
@@ -18,6 +18,11 @@ try:
     long_description = pypandoc.convert(long_description, 'rst', format='md')
 except ImportError:
     pass
+
+# install_requirements
+install_requires = ['click>=5.1', 'colorama', 'pyperclip>=1.5.11']
+if sys.version_info < (3, 0):
+    install_requires += ['ushlex']
 
 # package metadata
 setup(
@@ -43,5 +48,5 @@ setup(
         'License :: OSI Approved :: MIT License',
     ],
     long_description=long_description,
-    install_requires=['click>=5.1', 'colorama', 'pyperclip>=1.5.11', 'ushlex'],
+    install_requires=install_requires,
     tests_require=['pytest', 'PyYAML'])
