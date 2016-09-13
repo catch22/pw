@@ -19,3 +19,6 @@ pretty:
 encrypt-test-db:
 	gpg2 --batch --yes --homedir test/keys --encrypt --recipient "test.user@localhost" --output test/db.pw.gpg test/db.pw
 	gpg2 --batch --yes --homedir test/keys --encrypt --recipient "test.user@localhost" --output test/db.pw.asc --armor test/db.pw
+
+mypy:
+	mypy -m pw --strict-optional --check-untyped-defs --disallow-untyped-defs --warn-redundant-casts --disallow-untyped-calls --warn-unused-ignores

@@ -1,11 +1,12 @@
 from __future__ import absolute_import, division, print_function
 from .store import Entry
 import sys, warnings
+from typing import Dict, Iterator, List
 
 EXTENSIONS = ['.yaml', '.yml']
 
 
-def make_entry(key, dict):
+def make_entry(key: str, dict: Dict[str, str]) -> Entry:
     notes = ' | '.join(str(dict[key]) for key in ['L', 'N'] if key in dict)
     return Entry(
         key=key,
@@ -14,20 +15,20 @@ def make_entry(key, dict):
         notes=notes)
 
 
-def parse_entries(src):
+def parse_entries(src: str) -> List[Entry]:
     warnings.warn(
         "YAML support is deprecated and will be removed in the next version",
         DeprecationWarning)
-    import yaml
+    import yaml  # type: ignore
     try:
         from yaml import CLoader as Loader
     except ImportError:
-        from yaml import Loader as Loader
+        from yaml import Loader as Loader  # type: ignore
     root_node = yaml.load(src, Loader=Loader)
     return list(_collect_entries(root_node, ''))
 
 
-def _collect_entries(current_node, current_key):
+def _collect_entries(current_node: str, current_key: str) -> Iterator[Entry]:
     # list of accounts?
     if isinstance(current_node, list):
         for child_node in current_node:

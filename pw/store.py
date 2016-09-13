@@ -3,25 +3,26 @@ import os.path, sys
 from collections import namedtuple
 from io import StringIO
 from shlex import shlex
+from typing import List, Iterable
 from . import _gpg
 
 Entry = namedtuple('Entry', ['key', 'user', 'password', 'notes'])
 
 
-def _normalized_key(key):
+def _normalized_key(key: str) -> str:
     return key.replace(' ', '_').lower()
 
 
 class Store:
     """Password store."""
 
-    def __init__(self, path, entries):
+    def __init__(self, path: str, entries: Iterable[Entry]) -> None:
         # normalize keys
-        self.entries = [e._replace(key=_normalized_key(e.key))
+        self.entries = [e._replace(key=_normalized_key(e.key))  # type: ignore
                         for e in entries]
         self.path = path
 
-    def search(self, key_pattern, user_pattern):
+    def search(self, key_pattern: str, user_pattern: str) -> List[Entry]:
         """Search database for given key and user pattern."""
         # normalize key
         key_pattern = _normalized_key(key_pattern)
@@ -36,7 +37,7 @@ class Store:
         return sorted(results, key=lambda e: e.key)
 
     @staticmethod
-    def load(path):
+    def load(path: str) -> 'Store':
         """Load password store from file."""
         # load source (decrypting if necessary)
         if _gpg.is_encrypted(path):
@@ -57,7 +58,7 @@ class Store:
 
 
 class SyntaxError(Exception):
-    def __init__(self, lineno, line, reason):
+    def __init__(self, lineno: int, line: str, reason: str) -> None:
         super(SyntaxError, self).__init__('line %s: %s (%r)' %
                                           (lineno + 1, reason, line))
 
@@ -66,8 +67,8 @@ _EXPECT_ENTRY = 'expecting entry'
 _EXPECT_ENTRY_OR_NOTES = 'expecting entry or notes'
 
 
-def _parse_entries(src):
-    entries = []
+def _parse_entries(src: str) -> List[Entry]:
+    entries = []  # type: List[Entry]
     state = _EXPECT_ENTRY
 
     for lineno, line in enumerate(src.splitlines()):
@@ -87,7 +88,7 @@ def _parse_entries(src):
             if notes:
                 notes += "\n"
             notes += sline
-            entries[-1] = entries[-1]._replace(notes=notes)
+            entries[-1] = entries[-1]._replace(notes=notes)  # type: ignore
             continue
 
         # otherwise, parse as an entry
