@@ -2,9 +2,6 @@ from __future__ import absolute_import, division, print_function
 from .store import Entry
 import sys, warnings
 
-if sys.version_info[0] < 3:
-    str = unicode
-
 EXTENSIONS = ['.yaml', '.yml']
 
 

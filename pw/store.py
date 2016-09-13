@@ -2,10 +2,7 @@ from __future__ import absolute_import, division, print_function
 import os.path, sys
 from collections import namedtuple
 from io import StringIO
-if sys.version_info[0] < 3:
-    from ushlex import shlex
-else:
-    from shlex import shlex
+from shlex import shlex
 from . import _gpg
 
 Entry = namedtuple('Entry', ['key', 'user', 'password', 'notes'])

@@ -19,11 +19,6 @@ try:
 except ImportError:
     pass
 
-# install_requirements
-install_requires = ['click>=5.1', 'colorama', 'pyperclip>=1.5.11']
-if sys.version_info < (3, 0):
-    install_requires += ['ushlex']
-
 # package metadata
 setup(
     name='pw',
@@ -38,9 +33,7 @@ setup(
         'console_scripts': ['pw = pw.__main__:pw']
     },
     classifiers=[
-        'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 2.7',
-        'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3 :: Only',
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
         'Development Status :: 4 - Beta',
@@ -48,5 +41,5 @@ setup(
         'License :: OSI Approved :: MIT License',
     ],
     long_description=long_description,
-    install_requires=install_requires,
+    install_requires=['click>=5.1', 'colorama', 'pyperclip>=1.5.11'],
     tests_require=['pytest', 'PyYAML'])

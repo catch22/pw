@@ -1,6 +1,5 @@
 click
 colorama
-ushlex
 pyperclip
 pytest
 PyYAML
