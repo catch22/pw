@@ -18,8 +18,8 @@ def setup_module(module):
     pw._gpg._OVERRIDE_HOMEDIR = os.path.join(dirname(), 'keys')
 
 
-@pytest.fixture(scope='module',
-                params=['db.pw', 'db.pw.gpg', 'db.pw.asc', 'db.yaml'])
+@pytest.fixture(
+    scope='module', params=['db.pw', 'db.pw.gpg', 'db.pw.asc', 'db.yaml'])
 def runner(request):
     # instantiate runner and provide database path
     runner = CliRunner()
@@ -33,12 +33,13 @@ def test_version(runner):
     assert result.output.strip().startswith("pw version ")
 
 
-@pytest.mark.parametrize("args, exit_code, output_expected", [
-    # default query
-    (
-        [],
-        0,
-        u"""
+@pytest.mark.parametrize(
+    "args, exit_code, output_expected",
+    [
+        # default query
+        ([],
+         0,
+         u"""
 goggles: alice@gogglemail.com
    https://mail.goggles.com/
    second line
@@ -48,54 +49,39 @@ laptop: bob
 phones.myphone
 phones.samson
 router: ädmin | multiple (...)
-        """,
-    ),
-    # querying for path and user
-    (
-        ["goggle"],
-        0,
-        """
+        """, ),
+        # querying for path and user
+        (["goggle"],
+         0,
+         """
 goggles: alice@gogglemail.com
    https://mail.goggles.com/
    second line
 goggles: bob+spam@gogglemail.com
-        """,
-    ),
-    (
-        ["bob@"],
-        0,
-        """
+        """, ),
+        (["bob@"],
+         0,
+         """
 goggles: bob+spam@gogglemail.com
 laptop: bob
-        """,
-    ),
-    (
-        ["bob@goggle"],
-        0,
-        "goggles: bob+spam@gogglemail.com",
-    ),
-    (
-        ["goggle", "bob"],
-        0,
-        "goggles: bob+spam@gogglemail.com",
-    ),
-    (
-        ["bob@goggle", "bob"],
-        0,
-        "",
-    ),
-    # strictness
-    (
-        ["--strict", "myphone"],
-        0,
-        "phones.myphone",
-    ),
-    (
-        ["--strict", "phones"],
-        2,
-        "error: multiple or no records found (but using --strict flag)",
-    ),
-])  # yapf: disable
+        """, ),
+        (["bob@goggle"],
+         0,
+         "goggles: bob+spam@gogglemail.com", ),
+        (["goggle", "bob"],
+         0,
+         "goggles: bob+spam@gogglemail.com", ),
+        (["bob@goggle", "bob"],
+         0,
+         "", ),
+        # strictness
+        (["--strict", "myphone"],
+         0,
+         "phones.myphone", ),
+        (["--strict", "phones"],
+         2,
+         "error: multiple or no records found (but using --strict flag)", ),
+    ])
 def test_query(runner, args, exit_code, output_expected):
     result = runner("--echo", "--user", *args)
     assert result.exit_code == exit_code
@@ -111,43 +97,30 @@ def test_missing():
 
 CLIPBOARD_NOT_TOUCHED = u'CLIPBOARD_NOT_TOUCHED'
 
+
 @pytest.mark.parametrize("args, output_expected, clipboard_expected", [
-    (
-        ["laptop", "bob"],
-        "laptop: bob | *** PASSWORD COPIED TO CLIPBOARD ***",
-        "b0b",
-    ),
-    (
-        ["--copy", "laptop", "bob"],
-        "laptop: bob | *** PASSWORD COPIED TO CLIPBOARD ***",
-        "b0b",
-    ),
-    (
-        ["--copy", "--user", "laptop", "bob"],
-        "laptop: bob | *** USERNAME COPIED TO CLIPBOARD ***",
-        "bob",
-    ),
-    (
-        ["--echo", "laptop", "bob"],
-        "laptop: bob | b0b",
-        CLIPBOARD_NOT_TOUCHED,
-    ),
-    (
-        ["--echo", "--user", "laptop", "bob"],
-        "laptop: bob",
-        CLIPBOARD_NOT_TOUCHED,
-    ),
-    (
-        ["--raw", "laptop", "bob"],
-        "b0b",
-        CLIPBOARD_NOT_TOUCHED,
-    ),
-    (
-        ["--raw", "--user", "laptop", "bob"],
-        "bob",
-        CLIPBOARD_NOT_TOUCHED,
-    ),
-])  # yapf: disable
+    (["laptop", "bob"],
+     "laptop: bob | *** PASSWORD COPIED TO CLIPBOARD ***",
+     "b0b", ),
+    (["--copy", "laptop", "bob"],
+     "laptop: bob | *** PASSWORD COPIED TO CLIPBOARD ***",
+     "b0b", ),
+    (["--copy", "--user", "laptop", "bob"],
+     "laptop: bob | *** USERNAME COPIED TO CLIPBOARD ***",
+     "bob", ),
+    (["--echo", "laptop", "bob"],
+     "laptop: bob | b0b",
+     CLIPBOARD_NOT_TOUCHED, ),
+    (["--echo", "--user", "laptop", "bob"],
+     "laptop: bob",
+     CLIPBOARD_NOT_TOUCHED, ),
+    (["--raw", "laptop", "bob"],
+     "b0b",
+     CLIPBOARD_NOT_TOUCHED, ),
+    (["--raw", "--user", "laptop", "bob"],
+     "bob",
+     CLIPBOARD_NOT_TOUCHED, ),
+])
 def test_modes(runner, args, output_expected, clipboard_expected):
     pyperclip.copy(CLIPBOARD_NOT_TOUCHED)
     result = runner(*args)
@@ -157,47 +130,31 @@ def test_modes(runner, args, output_expected, clipboard_expected):
 
 
 @pytest.mark.parametrize("args, use_clipboard, length_expected", [
-    (
-        ["--gen"],
-        True,
-        pw.__main__.RANDOM_PASSWORD_DEFAULT_LENGTH,
-    ),
-    (
-        ["--gen", "--copy"],
-        True,
-        pw.__main__.RANDOM_PASSWORD_DEFAULT_LENGTH,
-    ),
-    (
-        ["--gen", "--echo"],
-        False,
-        pw.__main__.RANDOM_PASSWORD_DEFAULT_LENGTH,
-    ),
-    (
-        ["--gen", "--echo", "--raw"],
-        False,
-        pw.__main__.RANDOM_PASSWORD_DEFAULT_LENGTH,
-    ),
-    (
-        ["--gen", "8"],
-        True,
-        8,
-    ),
-    (
-        ["--gen", "--copy", "8"],
-        True,
-        8,
-    ),
-    (
-        ["--gen", "--echo", "8"],
-        False,
-        8,
-    ),
-    (
-        ["--gen", "--echo", "--raw", "8"],
-        False,
-        8,
-    ),
-])  # yapf: disable
+    (["--gen"],
+     True,
+     pw.__main__.RANDOM_PASSWORD_DEFAULT_LENGTH, ),
+    (["--gen", "--copy"],
+     True,
+     pw.__main__.RANDOM_PASSWORD_DEFAULT_LENGTH, ),
+    (["--gen", "--echo"],
+     False,
+     pw.__main__.RANDOM_PASSWORD_DEFAULT_LENGTH, ),
+    (["--gen", "--echo", "--raw"],
+     False,
+     pw.__main__.RANDOM_PASSWORD_DEFAULT_LENGTH, ),
+    (["--gen", "8"],
+     True,
+     8, ),
+    (["--gen", "--copy", "8"],
+     True,
+     8, ),
+    (["--gen", "--echo", "8"],
+     False,
+     8, ),
+    (["--gen", "--echo", "--raw", "8"],
+     False,
+     8, ),
+])
 def test_gen(runner, args, use_clipboard, length_expected):
     pyperclip.copy(CLIPBOARD_NOT_TOUCHED)
     result = runner(*args)

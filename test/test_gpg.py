@@ -57,9 +57,10 @@ def test_encrypt(dirname, filename):
     try:
         fp.close()
 
-        encrypt(recipient='test.user@localhost',
-                dest_path=fp.name,
-                content=unencrypted)
+        encrypt(
+            recipient='test.user@localhost',
+            dest_path=fp.name,
+            content=unencrypted)
         decrypted = decrypt(fp.name)
         assert decrypted == unencrypted
     finally:
