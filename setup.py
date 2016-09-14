@@ -19,6 +19,11 @@ try:
 except ImportError:
     pass
 
+# collect installation requirements
+install_requires = ['click>=5.1', 'colorama', 'pyperclip>=1.5.11']
+if sys.version_info < (3, 5):
+    install_requires += ['typing']
+
 # package metadata
 setup(
     name='pw',
@@ -41,5 +46,5 @@ setup(
         'License :: OSI Approved :: MIT License',
     ],
     long_description=long_description,
-    install_requires=['click>=5.1', 'colorama', 'pyperclip>=1.5.11'],
-    tests_require=['pytest', 'PyYAML'])
+    install_requires=install_requires,
+    tests_require=['pytest', 'PyYAML', 'mypy-lang'])
