@@ -1,18 +1,19 @@
 from __future__ import absolute_import, division, print_function
 import os.path
 import subprocess
+from typing import List, Optional
 
 _HAS_ARMOR = {'.gpg': False, '.asc': True}
 _EXTENSIONS = _HAS_ARMOR.keys()
-_OVERRIDE_HOMEDIR = None  # useful for unit tests
+_OVERRIDE_HOMEDIR = None  # type: Optional[str]  # useful for unit tests
 
 
-def is_encrypted(path):
+def is_encrypted(path: str) -> bool:
     _, ext = os.path.splitext(path)
     return ext in _EXTENSIONS
 
 
-def has_armor(path):
+def has_armor(path: str) -> bool:
     _, ext = os.path.splitext(path)
     if ext not in _EXTENSIONS:
         raise ValueError('File extension not recognized as encrypted (%r).' %
@@ -20,26 +21,26 @@ def has_armor(path):
     return _HAS_ARMOR[ext]
 
 
-def unencrypted_ext(path):
+def unencrypted_ext(path: str) -> str:
     root, ext = os.path.splitext(path)
     if ext in _EXTENSIONS:
         _, ext = os.path.splitext(root)
     return ext
 
 
-def _base_args():
+def _base_args() -> List[str]:
     args = ['gpg2', '--use-agent', '--quiet', '--batch', '--yes']
-    if _OVERRIDE_HOMEDIR:
+    if _OVERRIDE_HOMEDIR is not None:
         args += ['--homedir', _OVERRIDE_HOMEDIR]
     return args
 
 
-def decrypt(path):
+def decrypt(path: str) -> bytes:
     args = ['--decrypt', path]
     return subprocess.check_output(_base_args() + args)
 
 
-def encrypt(recipient, dest_path, content):
+def encrypt(recipient: str, dest_path: str, content: bytes) -> None:
     args = ["--encrypt"]
     if has_armor(dest_path):
         args += ["--armor"]
