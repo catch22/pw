@@ -18,8 +18,9 @@ class Store:
 
     def __init__(self, path: str, entries: Iterable[Entry]) -> None:
         # normalize keys
-        self.entries = [e._replace(key=_normalized_key(e.key))  # type: ignore
-                        for e in entries]
+        self.entries = [
+            e._replace(key=_normalized_key(e.key)) for e in entries
+        ]
         self.path = path
 
     def search(self, key_pattern: str, user_pattern: str) -> List[Entry]:
@@ -88,7 +89,7 @@ def _parse_entries(src: str) -> List[Entry]:
             if notes:
                 notes += "\n"
             notes += sline
-            entries[-1] = entries[-1]._replace(notes=notes)  # type: ignore
+            entries[-1] = entries[-1]._replace(notes=notes)
             continue
 
         # otherwise, parse as an entry
