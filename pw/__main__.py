@@ -195,7 +195,8 @@ def launch_editor(ctx, file):
         recipient = os.environ.get('PW_GPG_RECIPIENT')
         if not recipient:
             click.echo(
-                'error: no recipient set in PW_GPG_RECIPIENT environment variables')
+                'error: no recipient set in PW_GPG_RECIPIENT environment variables'
+            )
             ctx.exit(1)
 
     # launch the editor

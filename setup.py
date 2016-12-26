@@ -34,9 +34,7 @@ setup(
     url='https://github.com/catch22/pw',
     license='MIT',
     packages=['pw'],
-    entry_points={
-        'console_scripts': ['pw = pw.__main__:pw']
-    },
+    entry_points={'console_scripts': ['pw = pw.__main__:pw']},
     classifiers=[
         'Programming Language :: Python :: 3 :: Only',
         'Programming Language :: Python :: 3.4',
