@@ -11,3 +11,4 @@ pw.sublime-workspace
 /test/keys/.gpg-v21-migrated
 /test/keys/private-keys-v1.d
 /.cache
+/.eggs
