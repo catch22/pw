@@ -44,5 +44,6 @@ setup(
         'License :: OSI Approved :: MIT License',
     ],
     long_description=long_description,
+    setup_requires=['pytest-runner'],
     install_requires=install_requires,
     tests_require=['pytest', 'PyYAML', 'mypy-lang'])
