@@ -1,5 +1,4 @@
 from __future__ import absolute_import, division, print_function
-import os.path, sys
 from collections import namedtuple
 from io import StringIO
 from shlex import shlex

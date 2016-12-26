@@ -1,4 +1,4 @@
-import os, sys
+import sys
 
 # this script is a faux PW_EDITOR, which simply appends the string argv[1] to
 # the file argv[2]. it is called from test_cli.py:test_with_changes().
