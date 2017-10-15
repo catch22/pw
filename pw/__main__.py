@@ -38,14 +38,16 @@ RANDOM_PASSWORD_ALPHABET = string.ascii_letters + string.digits
     'mode',
     flag_value=Mode.COPY,
     default=True,
-    help='Display account information, but copy password to clipboard (default mode).'
+    help=
+    'Display account information, but copy password to clipboard (default mode).'
 )
 @click.option(
     '--echo',
     '-E',
     'mode',
     flag_value=Mode.ECHO,
-    help='Display account information as well as password in plaintext (alternative mode).'
+    help=
+    'Display account information as well as password in plaintext (alternative mode).'
 )
 @click.option(
     '--raw',
@@ -160,8 +162,8 @@ def pw(ctx, key_pattern, user_pattern, mode, strict_flag, user_flag, file,
         if entry.notes:
             if idx == 0:
                 line += '\n'
-                line += "\n".join("   " + line
-                                  for line in entry.notes.splitlines())
+                line += "\n".join(
+                    "   " + line for line in entry.notes.splitlines())
             else:
                 lines = entry.notes.splitlines()
                 line += ' | ' + lines[0]

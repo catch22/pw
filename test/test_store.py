@@ -264,5 +264,7 @@ def test_store_search(store):
 
     # search for both
     got = store.search(key_pattern='oggle', user_pattern='spam')
-    expected = [Entry('goggles', 'bob+spam@gogglemail.com', 'abcde', ''), ]
+    expected = [
+        Entry('goggles', 'bob+spam@gogglemail.com', 'abcde', ''),
+    ]
     assert got == expected

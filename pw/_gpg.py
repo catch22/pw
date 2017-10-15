@@ -16,8 +16,8 @@ def is_encrypted(path: str) -> bool:
 def has_armor(path: str) -> bool:
     _, ext = os.path.splitext(path)
     if ext not in _EXTENSIONS:
-        raise ValueError('File extension not recognized as encrypted (%r).' %
-                         ext)
+        raise ValueError(
+            'File extension not recognized as encrypted (%r).' % ext)
     return _HAS_ARMOR[ext]
 
 

@@ -49,7 +49,8 @@ laptop: bob
 phones.myphone
 phones.samson
 router: ädmin | multiple (...)
-        """, ),
+        """,
+        ),
         # querying for path and user
         (
             ["goggle"],
@@ -59,35 +60,42 @@ goggles: alice@gogglemail.com
    https://mail.goggles.com/
    second line
 goggles: bob+spam@gogglemail.com
-        """, ),
+        """,
+        ),
         (
             ["bob@"],
             0,
             """
 goggles: bob+spam@gogglemail.com
 laptop: bob
-        """, ),
+        """,
+        ),
         (
             ["bob@goggle"],
             0,
-            "goggles: bob+spam@gogglemail.com", ),
+            "goggles: bob+spam@gogglemail.com",
+        ),
         (
             ["goggle", "bob"],
             0,
-            "goggles: bob+spam@gogglemail.com", ),
+            "goggles: bob+spam@gogglemail.com",
+        ),
         (
             ["bob@goggle", "bob"],
             0,
-            "", ),
+            "",
+        ),
         # strictness
         (
             ["--strict", "myphone"],
             0,
-            "phones.myphone", ),
+            "phones.myphone",
+        ),
         (
             ["--strict", "phones"],
             2,
-            "error: multiple or no records found (but using --strict flag)", ),
+            "error: multiple or no records found (but using --strict flag)",
+        ),
     ])
 def test_query(runner, args, exit_code, output_expected):
     result = runner("--echo", "--user", *args)
@@ -109,31 +117,38 @@ CLIPBOARD_NOT_TOUCHED = u'CLIPBOARD_NOT_TOUCHED'
     (
         ["laptop", "bob"],
         "laptop: bob | *** PASSWORD COPIED TO CLIPBOARD ***",
-        "b0b", ),
+        "b0b",
+    ),
     (
         ["--copy", "laptop", "bob"],
         "laptop: bob | *** PASSWORD COPIED TO CLIPBOARD ***",
-        "b0b", ),
+        "b0b",
+    ),
     (
         ["--copy", "--user", "laptop", "bob"],
         "laptop: bob | *** USERNAME COPIED TO CLIPBOARD ***",
-        "bob", ),
+        "bob",
+    ),
     (
         ["--echo", "laptop", "bob"],
         "laptop: bob | b0b",
-        CLIPBOARD_NOT_TOUCHED, ),
+        CLIPBOARD_NOT_TOUCHED,
+    ),
     (
         ["--echo", "--user", "laptop", "bob"],
         "laptop: bob",
-        CLIPBOARD_NOT_TOUCHED, ),
+        CLIPBOARD_NOT_TOUCHED,
+    ),
     (
         ["--raw", "laptop", "bob"],
         "b0b",
-        CLIPBOARD_NOT_TOUCHED, ),
+        CLIPBOARD_NOT_TOUCHED,
+    ),
     (
         ["--raw", "--user", "laptop", "bob"],
         "bob",
-        CLIPBOARD_NOT_TOUCHED, ),
+        CLIPBOARD_NOT_TOUCHED,
+    ),
 ])
 def test_modes(runner, args, output_expected, clipboard_expected):
     pyperclip.copy(CLIPBOARD_NOT_TOUCHED)
@@ -147,35 +162,43 @@ def test_modes(runner, args, output_expected, clipboard_expected):
     (
         ["--gen"],
         True,
-        pw.__main__.RANDOM_PASSWORD_DEFAULT_LENGTH, ),
+        pw.__main__.RANDOM_PASSWORD_DEFAULT_LENGTH,
+    ),
     (
         ["--gen", "--copy"],
         True,
-        pw.__main__.RANDOM_PASSWORD_DEFAULT_LENGTH, ),
+        pw.__main__.RANDOM_PASSWORD_DEFAULT_LENGTH,
+    ),
     (
         ["--gen", "--echo"],
         False,
-        pw.__main__.RANDOM_PASSWORD_DEFAULT_LENGTH, ),
+        pw.__main__.RANDOM_PASSWORD_DEFAULT_LENGTH,
+    ),
     (
         ["--gen", "--echo", "--raw"],
         False,
-        pw.__main__.RANDOM_PASSWORD_DEFAULT_LENGTH, ),
+        pw.__main__.RANDOM_PASSWORD_DEFAULT_LENGTH,
+    ),
     (
         ["--gen", "8"],
         True,
-        8, ),
+        8,
+    ),
     (
         ["--gen", "--copy", "8"],
         True,
-        8, ),
+        8,
+    ),
     (
         ["--gen", "--echo", "8"],
         False,
-        8, ),
+        8,
+    ),
     (
         ["--gen", "--echo", "--raw", "8"],
         False,
-        8, ),
+        8,
+    ),
 ])
 def test_gen(runner, args, use_clipboard, length_expected):
     pyperclip.copy(CLIPBOARD_NOT_TOUCHED)
@@ -186,8 +209,8 @@ def test_gen(runner, args, use_clipboard, length_expected):
     if use_clipboard:
         assert output == "*** PASSWORD COPIED TO CLIPBOARD ***"
         assert len(clipboard) == length_expected
-        assert all(c in pw.__main__.RANDOM_PASSWORD_ALPHABET
-                   for c in clipboard)
+        assert all(
+            c in pw.__main__.RANDOM_PASSWORD_ALPHABET for c in clipboard)
     else:
         assert len(output) == length_expected
         assert all(c in pw.__main__.RANDOM_PASSWORD_ALPHABET for c in output)
