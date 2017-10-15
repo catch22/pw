@@ -93,7 +93,7 @@ def _parse_entries(src: str) -> List[Entry]:
 
         # otherwise, parse as an entry
         sio = StringIO(line)
-        lexer = shlex(sio, posix=True)
+        lexer = shlex(sio, posix=True)  # type: ignore
         lexer.whitespace_split = True
 
         try:

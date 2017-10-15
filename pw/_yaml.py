@@ -1,7 +1,7 @@
 from __future__ import absolute_import, division, print_function
 from .store import Entry
 import warnings
-from typing import Dict, Iterator, List
+from typing import Dict, Iterator, List, Union, Text
 
 EXTENSIONS = ['.yaml', '.yml']
 
@@ -19,16 +19,17 @@ def parse_entries(src: str) -> List[Entry]:
     warnings.warn(
         "YAML support is deprecated and will be removed in the next version",
         DeprecationWarning)
-    import yaml  # type: ignore
+    import yaml
     try:
-        from yaml import CLoader as Loader
+        from yaml import CLoader as Loader  # type: ignore
     except ImportError:
-        from yaml import Loader as Loader  # type: ignore
-    root_node = yaml.load(src, Loader=Loader)
+        from yaml import Loader as Loader
+    root_node = yaml.load(src, Loader=Loader)  # type: ignore
     return list(_collect_entries(root_node, ''))
 
 
-def _collect_entries(current_node: str, current_key: str) -> Iterator[Entry]:
+def _collect_entries(current_node: Union[List, Dict, Text],
+                     current_key: str) -> Iterator[Entry]:
     # list of accounts?
     if isinstance(current_node, list):
         for child_node in current_node:

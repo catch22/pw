@@ -1,7 +1,7 @@
 from __future__ import absolute_import, division, print_function
 import os.path
 import subprocess
-from typing import List, Optional
+from typing import List, Optional, cast
 
 _HAS_ARMOR = {'.gpg': False, '.asc': True}
 _EXTENSIONS = _HAS_ARMOR.keys()
@@ -37,7 +37,7 @@ def _base_args() -> List[str]:
 
 def decrypt(path: str) -> bytes:
     args = ['--decrypt', path]
-    return subprocess.check_output(_base_args() + args)
+    return cast(bytes, subprocess.check_output(_base_args() + args))
 
 
 def encrypt(recipient: str, dest_path: str, content: bytes) -> None:
