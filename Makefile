@@ -11,7 +11,7 @@ upload-release:
 	python -c "import subprocess; assert b'dev' not in subprocess.check_output('python setup.py --version', shell=True).strip(), 'trying to upload dev release'"
 	python setup.py sdist bdist_wheel
 	#python setup.py upload
-	twine upload dist/*
+	twine upload dist/* --sign
 
 pretty:
 	yapf -i pw/*.py test/*.py
