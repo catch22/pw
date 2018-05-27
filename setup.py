@@ -48,5 +48,5 @@ setup(
     long_description=long_description,
     setup_requires=["pytest-runner"],
     install_requires=install_requires,
-    extras_require={"dev": ["pytest", "PyYAML", "mypy", "yapf"]},
+    extras_require={"dev": ["pytest", "PyYAML", "mypy", "black"]},
 )

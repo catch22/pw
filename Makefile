@@ -14,7 +14,8 @@ upload-release:
 	twine upload dist/* --sign
 
 pretty:
-	yapf -i pw/*.py test/*.py
+	#yapf -i *.py pw/*.py test/*.py
+	black *.py pw/*.py test/*.py
 
 encrypt-test-db:
 	gpg2 --batch --yes --homedir test/keys --encrypt --recipient "test.user@localhost" --output test/db.pw.gpg test/db.pw
