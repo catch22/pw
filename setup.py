@@ -43,5 +43,5 @@ setup(
     long_description_content_type="text/markdown",
     setup_requires=["pytest-runner"],
     install_requires=install_requires,
-    extras_require={"dev": ["pytest", "PyYAML", "mypy", "black"]},
+    extras_require={"dev": ["pytest", "PyYAML", "mypy", "black", "twine"]},
 )
