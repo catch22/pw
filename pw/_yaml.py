@@ -55,6 +55,6 @@ def _collect_entries(current_node: Union[List, Dict, Text],
             continue
 
         # recurse
-        for entry in _collect_entries(child_node, current_key + '.' + key
-                                      if current_key else key):
+        for entry in _collect_entries(
+                child_node, current_key + '.' + key if current_key else key):
             yield entry
