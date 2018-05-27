@@ -5,11 +5,11 @@ from shlex import shlex
 from typing import List, Iterable
 from . import _gpg
 
-Entry = namedtuple('Entry', ['key', 'user', 'password', 'notes'])
+Entry = namedtuple("Entry", ["key", "user", "password", "notes"])
 
 
 def _normalized_key(key: str) -> str:
-    return key.replace(' ', '_').lower()
+    return key.replace(" ", "_").lower()
 
 
 class Store:
@@ -17,9 +17,7 @@ class Store:
 
     def __init__(self, path: str, entries: Iterable[Entry]) -> None:
         # normalize keys
-        self.entries = [
-            e._replace(key=_normalized_key(e.key)) for e in entries
-        ]
+        self.entries = [e._replace(key=_normalized_key(e.key)) for e in entries]
         self.path = path
 
     def search(self, key_pattern: str, user_pattern: str) -> List[Entry]:
@@ -37,19 +35,20 @@ class Store:
         return sorted(results, key=lambda e: e.key)
 
     @staticmethod
-    def load(path: str) -> 'Store':
+    def load(path: str) -> "Store":
         """Load password store from file."""
         # load source (decrypting if necessary)
         if _gpg.is_encrypted(path):
             src_bytes = _gpg.decrypt(path)
         else:
-            src_bytes = open(path, 'rb').read()
-        src = src_bytes.decode('utf-8')
+            src_bytes = open(path, "rb").read()
+        src = src_bytes.decode("utf-8")
 
         # parse database source
         ext = _gpg.unencrypted_ext(path)
-        if ext in ['.yml', '.yaml']:
+        if ext in [".yml", ".yaml"]:
             from . import _yaml
+
             entries = _yaml.parse_entries(src)
         else:
             entries = _parse_entries(src)
@@ -58,13 +57,15 @@ class Store:
 
 
 class SyntaxError(Exception):
+
     def __init__(self, lineno: int, line: str, reason: str) -> None:
-        super(SyntaxError,
-              self).__init__('line %s: %s (%r)' % (lineno + 1, reason, line))
+        super(SyntaxError, self).__init__(
+            "line %s: %s (%r)" % (lineno + 1, reason, line)
+        )
 
 
-_EXPECT_ENTRY = 'expecting entry'
-_EXPECT_ENTRY_OR_NOTES = 'expecting entry or notes'
+_EXPECT_ENTRY = "expecting entry"
+_EXPECT_ENTRY_OR_NOTES = "expecting entry or notes"
 
 
 def _parse_entries(src: str) -> List[Entry]:
@@ -74,12 +75,12 @@ def _parse_entries(src: str) -> List[Entry]:
     for lineno, line in enumerate(src.splitlines()):
         # empty lines are skipped (but also terminate the notes section)
         sline = line.strip()
-        if not sline or line.startswith('#'):
+        if not sline or line.startswith("#"):
             state = _EXPECT_ENTRY
             continue
 
         # non-empty line with leading spaces is interpreted as a notes line
-        if line[0] in [' ', '\t']:
+        if line[0] in [" ", "\t"]:
             if state != _EXPECT_ENTRY_OR_NOTES:
                 raise SyntaxError(lineno, line, state)
 
@@ -100,7 +101,7 @@ def _parse_entries(src: str) -> List[Entry]:
             key = lexer.get_token()
         except ValueError as e:
             raise SyntaxError(lineno, line, str(e))
-        key = key.rstrip(':')
+        key = key.rstrip(":")
         assert key
 
         try:
@@ -118,7 +119,7 @@ def _parse_entries(src: str) -> List[Entry]:
 
         if not password:
             password = user
-            user = notes = u''
+            user = notes = u""
         else:
             password = password
             notes = sio.read().strip()
