@@ -26,8 +26,8 @@ def parse_entries(src: str) -> List[Entry]:
     try:
         from yaml import CLoader as Loader  # type: ignore
     except ImportError:
-        from yaml import Loader as Loader
-    root_node = yaml.load(src, Loader=Loader)  # type: ignore
+        from yaml import Loader as Loader  # type: ignore
+    root_node = yaml.load(src, Loader=Loader)
     return list(_collect_entries(root_node, ""))
 
 
