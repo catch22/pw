@@ -7,7 +7,7 @@ pw-with-test-db:
 	python -m pw --file test/db.pw ${ARGS}
 
 upload-release:
-	python -c "import wheel, pypandoc"  # check upload dependencies
+	python -c "import wheel"  # check upload dependencies
 	python -c "import subprocess; assert b'dev' not in subprocess.check_output('python setup.py --version', shell=True).strip(), 'trying to upload dev release'"
 	python setup.py sdist bdist_wheel
 	#python setup.py upload

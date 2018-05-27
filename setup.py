@@ -1,25 +1,19 @@
 from __future__ import absolute_import, division, print_function
 from setuptools import setup
-import ast, io, re, sys
-from os.path import join, dirname, abspath
+import ast, io, re, sys, os
 
-# determine __version__ from pw.py source (adapted from mitsuhiko)
+# determine version (adapted from mitsuhiko)
 VERSION_RE = re.compile(r"__version__\s+=\s+(.*)")
-
 with io.open("pw/__init__.py", encoding="utf-8") as fp:
     version_code = VERSION_RE.search(fp.read()).group(1)
     version = str(ast.literal_eval(version_code))
 
-# read long description and convert to RST
+# read long description
 long_description = io.open(
-    join(dirname(abspath(__file__)), "README.md"), encoding="utf-8"
+    os.path.join(os.path.dirname(os.path.abspath(__file__)), "README.md"),
+    encoding="utf-8",
 ).read()
-try:
-    import pypandoc
 
-    long_description = pypandoc.convert(long_description, "rst", format="md")
-except ImportError:
-    pass
 
 # collect installation requirements
 install_requires = ["click>=5.1", "colorama", "pyperclip>=1.5.11"]
@@ -46,6 +40,7 @@ setup(
         "License :: OSI Approved :: MIT License",
     ],
     long_description=long_description,
+    long_description_content_type="text/markdown",
     setup_requires=["pytest-runner"],
     install_requires=install_requires,
     extras_require={"dev": ["pytest", "PyYAML", "mypy", "black"]},
