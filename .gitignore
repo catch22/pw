@@ -12,5 +12,5 @@ pw.sublime-workspace
 /test/keys/private-keys-v1.d
 /.cache
 /.eggs
-/.mypy_cache
 /.vscode
+.mypy_cache
