@@ -6,15 +6,6 @@ import pw
 from pw.store import _normalized_key, _parse_entries, Entry, Store, SyntaxError
 
 
-def dirname():
-    return os.path.dirname(os.path.abspath(__file__))
-
-
-def setup_module(module):
-    # override GPG homedir
-    pw._gpg._OVERRIDE_HOMEDIR = os.path.join(dirname(), "keys")
-
-
 def test_normalized_key():
     assert _normalized_key("My secret aCcOuNt") == "my_secret_account"
 
@@ -312,8 +303,8 @@ def test_parse_entries_syntax_errors(src, expected_error_prefix):
 
 
 @pytest.fixture(scope="module", params=["db.pw", "db.pw.gpg", "db.pw.asc", "db.yaml"])
-def store(request):
-    abspath = os.path.join(dirname(), request.param)
+def store(request, dirname):
+    abspath = os.path.join(dirname, request.param)
     return Store.load(abspath)
 
 

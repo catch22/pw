@@ -1,18 +1,8 @@
 from __future__ import absolute_import, division, print_function
-import os, os.path, tempfile
+import os.path, tempfile
 import pytest
 import pw._gpg
 from pw._gpg import is_encrypted, has_armor, unencrypted_ext, decrypt, encrypt
-
-
-@pytest.fixture(scope="module")
-def dirname():
-    return os.path.dirname(os.path.abspath(__file__))
-
-
-def setup_module(module):
-    # override GPG homedir
-    pw._gpg._OVERRIDE_HOMEDIR = os.path.join(dirname(), "keys")
 
 
 def test_detection():

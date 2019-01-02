@@ -7,21 +7,17 @@ import pw, pw.__main__
 import pyperclip
 
 
-@pytest.fixture()
-def dirname():
-    return os.path.dirname(os.path.abspath(__file__))
-
-
-def setup_module(module):
-    # override GPG homedir
-    pw._gpg._OVERRIDE_HOMEDIR = os.path.join(dirname(), "keys")
-
-
 @pytest.fixture(scope="module", params=["db.pw", "db.pw.gpg", "db.pw.asc", "db.yaml"])
-def runner(request):
-    # instantiate runner and provide database path
+def runner(request, dirname):
     runner = CliRunner()
-    abspath = os.path.join(dirname(), request.param)
+    abspath = os.path.join(dirname, request.param)
+    return lambda *args: runner.invoke(pw.__main__.pw, ("--file", abspath) + args)
+
+
+@pytest.fixture(scope="module", params=["db.pw.gpg", "db.pw.asc"])
+def encrypted_runner(request, dirname):
+    runner = CliRunner()
+    abspath = os.path.join(dirname, request.param)
     return lambda *args: runner.invoke(pw.__main__.pw, ("--file", abspath) + args)
 
 
@@ -176,11 +172,6 @@ def test_edit_editor_missing(runner):
     result = runner("--edit")
     assert result.exit_code == 1
     assert result.output.strip().startswith("error: no editor set")
-
-
-@pytest.fixture(scope="module", params=["db.pw.gpg", "db.pw.asc"])
-def encrypted_runner(request):
-    return runner(request)
 
 
 def test_edit_recipient_missing(encrypted_runner):

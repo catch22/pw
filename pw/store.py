@@ -57,7 +57,6 @@ class Store:
 
 
 class SyntaxError(Exception):
-
     def __init__(self, lineno: int, line: str, reason: str) -> None:
         super(SyntaxError, self).__init__(
             "line %s: %s (%r)" % (lineno + 1, reason, line)
