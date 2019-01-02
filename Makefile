@@ -1,5 +1,7 @@
 .PHONY: test test-coverage upload-release pretty encrypt-test-db
 
+PW_GPG ?= gpg
+
 test:
 	py.test
 
@@ -18,8 +20,8 @@ pretty:
 	black *.py pw/*.py test/*.py
 
 encrypt-test-db:
-	gpg2 --batch --yes --homedir test/keys --encrypt --recipient "test.user@localhost" --output test/db.pw.gpg test/db.pw
-	gpg2 --batch --yes --homedir test/keys --encrypt --recipient "test.user@localhost" --output test/db.pw.asc --armor test/db.pw
+	$(PW_GPG) --batch --yes --homedir test/keys --encrypt --recipient "test.user@localhost" --output test/db.pw.gpg test/db.pw
+	$(PW_GPG) --batch --yes --homedir test/keys --encrypt --recipient "test.user@localhost" --output test/db.pw.asc --armor test/db.pw
 
 mypy:
 	mypy -m pw --strict

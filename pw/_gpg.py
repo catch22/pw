@@ -28,7 +28,8 @@ def unencrypted_ext(path: str) -> str:
 
 
 def _base_args() -> List[str]:
-    args = ["gpg2", "--use-agent", "--quiet", "--batch", "--yes"]
+    binary = os.environ.get("PW_GPG", "gpg")
+    args = [binary, "--use-agent", "--quiet", "--batch", "--yes"]
     if _OVERRIDE_HOMEDIR is not None:
         args += ["--homedir", _OVERRIDE_HOMEDIR]
     return args
