@@ -5,6 +5,10 @@ python:
   - "3.6"
   - "3.7"
 
+# https://github.com/travis-ci/travis-ci/issues/9069#issuecomment-425720905
+sudo: required
+dist: xenial
+
 install:
   - "sudo apt-get update -qq"
   - "sudo apt-get install -qq xclip gnupg2"
