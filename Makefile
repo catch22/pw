@@ -3,7 +3,7 @@
 PW_GPG ?= gpg
 
 test:
-	py.test
+	pytest
 
 pw-with-test-db:
 	python -m pw --file test/db.pw ${ARGS}
