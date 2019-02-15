@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pw"
-version = "0.11.0dev0"
+version = "0.11.0"
 description = "Search in GPG-encrypted password file."
 authors = ["Michael Walter <michael.walter@gmail.com>"]
 license = "MIT"

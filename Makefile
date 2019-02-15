@@ -8,11 +8,6 @@ test:
 pw-with-test-db:
 	poetry run pw --file test/db.pw ${ARGS}
 
-upload-release:
-	python -c "import subprocess; assert b'dev' not in subprocess.check_output('python setup.py --version', shell=True).strip(), 'trying to upload dev release'"
-	poetry build
-	poetry publish
-
 pretty:
 	# poetry run yapf -i *.py pw/*.py test/*.py
 	poetry run black pw/*.py test/*.py
