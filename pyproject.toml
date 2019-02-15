@@ -22,6 +22,7 @@ pytest = "^4.2"
 PyYAML = "^3.13"
 mypy = "^0.670.0"
 black = {version = "^18.3-alpha.0",allows-prereleases = true}
+bumpversion = "^0.5.3"
 
 [build-system]
 requires = ["poetry>=0.12"]
