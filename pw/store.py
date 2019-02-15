@@ -46,12 +46,11 @@ class Store:
 
         # parse database source
         ext = _gpg.unencrypted_ext(path)
-        if ext in [".yml", ".yaml"]:
-            from . import _yaml
-
-            entries = _yaml.parse_entries(src)
-        else:
-            entries = _parse_entries(src)
+        assert ext not in [
+            ".yml",
+            ".yaml",
+        ], "YAML support was removed in version 0.12.0"
+        entries = _parse_entries(src)
 
         return Store(path, entries)
 

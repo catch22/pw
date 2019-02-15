@@ -7,7 +7,7 @@ import pw, pw.__main__
 import pyperclip
 
 
-@pytest.fixture(scope="module", params=["db.pw", "db.pw.gpg", "db.pw.asc", "db.yaml"])
+@pytest.fixture(scope="module", params=["db.pw", "db.pw.gpg", "db.pw.asc"])
 def runner(request, dirname):
     runner = CliRunner()
     abspath = os.path.join(dirname, request.param)
@@ -197,7 +197,6 @@ def test_edit_file_missing():
         ("db.pw", "fancy_new_entry: user pass interesting notes"),
         ("db.pw.gpg", "fancy_new_entry: user pass interesting notes"),
         ("db.pw.asc", "fancy_new_entry: user pass interesting notes"),
-        ("db.yaml", "fancy_new_entry: {U: user, P: pass, N: interesting notes}"),
     ],
 )
 def test_edit_with_changes(dirname, filename, addendum):

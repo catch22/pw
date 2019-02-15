@@ -302,7 +302,7 @@ def test_parse_entries_syntax_errors(src, expected_error_prefix):
     assert str(excinfo.value).startswith(expected_error_prefix)
 
 
-@pytest.fixture(scope="module", params=["db.pw", "db.pw.gpg", "db.pw.asc", "db.yaml"])
+@pytest.fixture(scope="module", params=["db.pw", "db.pw.gpg", "db.pw.asc"])
 def store(request, dirname):
     abspath = os.path.join(dirname, request.param)
     return Store.load(abspath)
