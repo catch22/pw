@@ -1,5 +1,0 @@
-click
-colorama
-pyperclip
-pytest
-PyYAML

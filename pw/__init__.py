@@ -1,4 +1,4 @@
 from __future__ import absolute_import, division, print_function
 from .store import Store, Entry
 
-__version__ = "0.10.1dev0"
+__version__ = "0.11.0dev0"

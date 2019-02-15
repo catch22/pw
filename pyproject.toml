@@ -1,0 +1,28 @@
+[tool.poetry]
+name = "pw"
+version = "0.11.0dev0"
+description = "Search in GPG-encrypted password file."
+authors = ["Michael Walter <michael.walter@gmail.com>"]
+license = "MIT"
+homepage = "https://github.com/catch22/pw"
+classifiers = ["Environment :: Console"]
+readme = "README.md"
+
+[tool.poetry.scripts]
+pw = 'pw.__main__:pw'
+
+[tool.poetry.dependencies]
+python = "^3.6"
+click = "^7.0"
+colorama = "^0.4.1"
+pyperclip = "^1.7"
+
+[tool.poetry.dev-dependencies]
+pytest = "^4.2"
+PyYAML = "^3.13"
+mypy = "^0.670.0"
+black = {version = "^18.3-alpha.0",allows-prereleases = true}
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"
