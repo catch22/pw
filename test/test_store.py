@@ -1,5 +1,4 @@
 # coding: utf-8
-from __future__ import absolute_import, division, print_function
 import pytest
 import os.path
 import pw
@@ -13,15 +12,15 @@ def test_normalized_key():
 @pytest.mark.parametrize(
     "src, expected",
     [
-        (u"", []),
+        ("", []),
         (
-            u"""
+            """
 # this is a comment
         """,
             [],
         ),
         (
-            u"""
+            """
 key pass
 key: pass
 #
@@ -46,7 +45,7 @@ key: "pass word"
             ],
         ),
         (
-            u"""
+            """
 key user pass
 key: user pass
 #
@@ -61,7 +60,7 @@ key: user pass
             ],
         ),
         (
-            u"""
+            """
 key user pass these are some interesting notes
 key: user pass these are some interesting notes
 #
@@ -96,7 +95,7 @@ key: user pass these are some interesting notes
             ],
         ),
         (
-            u"""
+            """
 key pass
     notes line 1
     notes line 2
@@ -162,7 +161,7 @@ key "" pass notes line 0
             ],
         ),
         (
-            u"""
+            """
 key user pass
     notes line 1
     notes line 2
@@ -228,15 +227,15 @@ key user pass notes line 0
             ],
         ),
         (
-            u"""
+            """
 "السلام عليكم": 임요환 Нет Εις το επανιδείν
         """,
             [
                 Entry(
-                    key=u"السلام عليكم",
-                    user=u"임요환",
-                    password=u"Нет",
-                    notes=u"Εις το επανιδείν",
+                    key="السلام عليكم",
+                    user="임요환",
+                    password="Нет",
+                    notes="Εις το επανιδείν",
                 )
             ],
         ),
@@ -251,7 +250,7 @@ def test_parse_entries(src, expected):
     "src, expected_error_prefix",
     [
         (
-            u"""
+            """
 foo: bar
   note line 1
 
@@ -260,7 +259,7 @@ foo: bar
             "line 4: expecting entry (",
         ),
         (
-            u"""
+            """
 foo: bar
   note line 1
 # non-indented comment
@@ -269,7 +268,7 @@ foo: bar
             "line 4: expecting entry (",
         ),
         (
-            u"""
+            """
 foo: bar
 baz
 boink: zonk
@@ -277,19 +276,19 @@ boink: zonk
             "line 2: expecting entry or notes (",
         ),
         (
-            u"""
+            """
 foo": bar
         """,
             "line 1: No closing quotation (",
         ),
         (
-            u"""
+            """
 foo: "bar
         """,
             "line 1: No closing quotation (",
         ),
         (
-            u"""
+            """
 foo: bar "baz
         """,
             "line 1: No closing quotation (",
@@ -319,7 +318,7 @@ def test_store_entries(store):
             "https://mail.goggles.com/\nsecond line",
         ),
         Entry("goggles", "bob+spam@gogglemail.com", "abcde", ""),
-        Entry("router", u"ädmin", "gamma zeta", "multiple\nlines\nof\nnotes"),
+        Entry("router", "ädmin", "gamma zeta", "multiple\nlines\nof\nnotes"),
         Entry("phones.myphone", "", "0000", ""),
         Entry("phones.samson", "", "111", ""),
     ]  # yapf: disable

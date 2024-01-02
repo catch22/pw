@@ -1,5 +1,4 @@
 # coding: utf-8
-from __future__ import absolute_import, division, print_function
 from click.testing import CliRunner
 import os.path, sys, tempfile
 import pytest
@@ -34,7 +33,7 @@ def test_version(runner):
         (
             [],
             0,
-            u"""
+            """
 goggles: alice@gogglemail.com
    https://mail.goggles.com/
    second line
@@ -90,7 +89,7 @@ def test_missing():
     assert "error: password store not found at 'XXX'" == result.output.strip()
 
 
-CLIPBOARD_NOT_TOUCHED = u"CLIPBOARD_NOT_TOUCHED"
+CLIPBOARD_NOT_TOUCHED = "CLIPBOARD_NOT_TOUCHED"
 
 
 @pytest.mark.parametrize(
