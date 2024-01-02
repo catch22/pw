@@ -30,7 +30,4 @@ jobs:
         pip install poetry
         poetry install
     - name: Test with pytest
-      uses: coactions/setup-xvfb@v1
-      with:
-        run: PW_GPG=gpg2 make test
-        working-directory: ./
+      run: PW_GPG=gpg2 xvfb-run make test
